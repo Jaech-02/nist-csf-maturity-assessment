@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+@media print {
+  header, nav, footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 11pt !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .control-detail-body {
+    display: block !important;
+  }
+
+  * {
+    break-inside: avoid;
+  }
+
+  button {
+    display: none !important;
+  }
+
+  a {
+    color: #1e40af !important;
+    text-decoration: underline !important;
+  }
+}
