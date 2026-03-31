@@ -8,11 +8,11 @@ assignees: ''
 
 ## Problema o Necesidad
 
-Descripcion clara del problema que esta feature resolveria.
+Descripción clara del problema que esta feature resolvería.
 
-## Solucion Propuesta
+## Solución Propuesta
 
-Descripcion de la solucion que te gustaria ver implementada.
+Descripción de la solución que te gustaría ver implementada.
 
 ## Alternativas Consideradas
 
@@ -20,7 +20,7 @@ Otras soluciones o enfoques que hayas considerado.
 
 ## Marco de Referencia
 
-Si esta relacionado con un marco de seguridad especifico, indicar:
+Si está relacionado con un marco de seguridad específico, indicar:
 - [ ] ISO 27001/27002
 - [ ] NIST CSF 2.0
 - [ ] NIST 800-53
@@ -32,4 +32,4 @@ Si esta relacionado con un marco de seguridad especifico, indicar:
 
 ## Contexto Adicional
 
-Cualquier informacion adicional, mockups, o referencias.
+Cualquier información adicional, mockups, o referencias.

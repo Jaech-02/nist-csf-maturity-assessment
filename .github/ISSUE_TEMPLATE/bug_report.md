@@ -6,9 +6,9 @@ labels: bug
 assignees: ''
 ---
 
-## Descripcion del Bug
+## Descripción del Bug
 
-Descripcion clara y concisa del error.
+Descripción clara y concisa del error.
 
 ## Pasos para Reproducir
 
@@ -19,11 +19,11 @@ Descripcion clara y concisa del error.
 
 ## Comportamiento Esperado
 
-Que deberia haber pasado.
+Qué debería haber pasado.
 
 ## Comportamiento Actual
 
-Que paso en su lugar.
+Qué pasó en su lugar.
 
 ## Capturas de Pantalla
 
@@ -34,8 +34,8 @@ Si aplica, agrega capturas de pantalla.
 - **Navegador:** [ej. Chrome 120, Firefox 121, Safari 17]
 - **Sistema Operativo:** [ej. Windows 11, macOS 14, Android 14]
 - **Dispositivo:** [ej. Desktop, iPhone 15, Samsung Galaxy S24]
-- **Version de la app:** [ej. v2.1]
+- **Versión de la app:** [ej. v2.1]
 
 ## Contexto Adicional
 
-Cualquier informacion adicional relevante.
+Cualquier información adicional relevante.

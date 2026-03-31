@@ -7,9 +7,9 @@
 
 # TTPSEC Asesor ANCI
 
-*Evaluador anonimo de madurez en ciberseguridad basado en los 9 Basicos de la ANCI + Control 0: Gestion de Activos*
+*Evaluador anónimo de madurez en ciberseguridad basado en los 9 Básicos de la ANCI + Control 0: Gestión de Activos*
 
-| Stack | Licencia | Estado | Version | Deploy |
+| Stack | Licencia | Estado | Versión | Deploy |
 |-------|----------|--------|---------|--------|
 | Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.1 | [GitHub Pages](https://ttpsecspa.github.io/ANCI/) |
 
@@ -17,39 +17,39 @@
 
 ## Tabla de Contenidos
 
-- [Descripcion](#-descripcion)
+- [Descripción](#-descripcion)
 - [Arquitectura](#-arquitectura)
 - [Requisitos Previos](#-requisitos-previos)
-- [Instalacion](#-instalacion)
+- [Instalación](#-instalacion)
 - [Uso / Quick Start](#-uso--quick-start)
-- [Configuracion](#-configuracion)
+- [Configuración](#-configuracion)
 - [Controles Evaluados](#-controles-evaluados)
 - [Marcos de Referencia](#-marcos-de-referencia)
 - [Seguridad](#-seguridad)
 - [Testing](#-testing)
-- [Contribucion](#-contribucion)
+- [Contribución](#-contribucion)
 - [Roadmap](#-roadmap)
 - [Licencia](#-licencia)
 - [Contacto](#-contacto)
 
 ---
 
-## Descripcion
+## Descripción
 
-TTPSEC Asesor ANCI es una herramienta web de evaluacion de madurez en ciberseguridad, alineada a los **9 Basicos de la Ciberseguridad** definidos por la Agencia Nacional de Ciberseguridad (ANCI) de Chile, mas un **Control 0: Gestion de Activos** como base habilitante.
+TTPSEC Asesor ANCI es una herramienta web de evaluación de madurez en ciberseguridad, alineada a los **9 Básicos de la Ciberseguridad** definidos por la Agencia Nacional de Ciberseguridad (ANCI) de Chile, más un **Control 0: Gestión de Activos** como base habilitante.
 
-Disenada para organizaciones de cualquier tamano y sector (TI, OT, Infraestructura Critica), la herramienta genera recomendaciones mapeadas a marcos internacionales sin almacenar ni transmitir datos fuera del navegador del usuario.
+Diseñada para organizaciones de cualquier tamaño y sector (TI, OT, Infraestructura Crítica), la herramienta genera recomendaciones mapeadas a marcos internacionales sin almacenar ni transmitir datos fuera del navegador del usuario.
 
 **Features principales:**
 
-- 100% anonimo: sin registro, sin cookies, sin analytics, sin tracking
+- 100% anónimo: sin registro, sin cookies, sin analytics, sin tracking
 - Procesamiento 100% local en el navegador (client-side only)
 - 10 controles de seguridad con preguntas ponderadas
-- 3 contextos organizacionales: TI Corporativo, OT/ICS, Infraestructura Critica
-- Recomendaciones por nivel de madurez (critico, bajo, medio, alto)
+- 3 contextos organizacionales: TI Corporativo, OT/ICS, Infraestructura Crítica
+- Recomendaciones por nivel de madurez (crítico, bajo, medio, alto)
 - Mapeo completo a ISO 27001, NIST CSF 2.0, NIST 800-53, CIS v8.1, ISA/IEC 62443, NERC CIP
 - Tabla de mapping interactiva con todos los marcos
-- Exportacion de informe HTML y PDF (imprimir)
+- Exportación de informe HTML y PDF (imprimir)
 
 ---
 
@@ -69,13 +69,13 @@ anci-advisor/
 │   │   └── page.tsx           # SPA principal (todas las pantallas)
 │   └── lib/
 │       ├── data.ts            # Controles, preguntas, frameworks, maturity levels
-│       └── version.ts         # Version y fecha de la app
+│       └── version.ts         # Versión y fecha de la app
 ├── next.config.ts             # Static export + basePath GitHub Pages
 ├── package.json
 └── tsconfig.json
 ```
 
-### Flujo de la aplicacion
+### Flujo de la aplicación
 
 ```
 ┌──────────┐     ┌───────────┐     ┌──────────────┐     ┌────────────┐
@@ -92,19 +92,19 @@ anci-advisor/
 
 **Componentes clave:**
 
-| Componente | Archivo | Descripcion |
+| Componente | Archivo | Descripción |
 |------------|---------|-------------|
 | `Home` | `page.tsx` | Componente principal SPA con state management |
 | `QuestionScreen` | `page.tsx` | Pantalla de preguntas por control |
 | `Results` | `page.tsx` | Vista de resultados con score circular SVG |
-| `CONTROLS` | `data.ts` | Definicion de 10 controles con preguntas y pesos |
+| `CONTROLS` | `data.ts` | Definición de 10 controles con preguntas y pesos |
 | `exportReport` | `page.tsx` | Generador de informe HTML descargable |
 
 ---
 
 ## Requisitos Previos
 
-| Requisito | Version Minima | Notas |
+| Requisito | Versión Mínima | Notas |
 |-----------|---------------|-------|
 | Node.js | 18+ | Recomendado: 20 LTS o superior |
 | npm | 9+ | Incluido con Node.js |
@@ -114,15 +114,15 @@ anci-advisor/
 
 **Variables de entorno:**
 
-| Variable | Descripcion | Requerida | Default |
+| Variable | Descripción | Requerida | Default |
 |----------|-------------|-----------|---------|
-| `NODE_ENV` | Entorno de ejecucion | No | `development` |
+| `NODE_ENV` | Entorno de ejecución | No | `development` |
 
 > No se requieren API keys, tokens, ni servicios externos. Todo funciona localmente.
 
 ---
 
-## Instalacion
+## Instalación
 
 ```bash
 # 1. Clonar el repositorio
@@ -139,14 +139,14 @@ npm run dev
 # http://localhost:3000
 ```
 
-### Build de produccion
+### Build de producción
 
 ```bash
 # Generar static export
 npm run build
 
 # Los archivos quedan en ./out/
-# Listos para servir con cualquier servidor estatico
+# Listos para servir con cualquier servidor estático
 ```
 
 ### Deploy a GitHub Pages
@@ -161,10 +161,10 @@ npm run build
 ## Uso / Quick Start
 
 1. Abre [https://ttpsecspa.github.io/ANCI/](https://ttpsecspa.github.io/ANCI/)
-2. Selecciona tu **contexto organizacional**: TI Corporativo, OT/ICS, o Infraestructura Critica
-3. Haz clic en **Comenzar Evaluacion**
+2. Selecciona tu **contexto organizacional**: TI Corporativo, OT/ICS, o Infraestructura Crítica
+3. Haz clic en **Comenzar Evaluación**
 4. Responde las preguntas de cada control (Si implementado / Parcialmente / No implementado)
-5. Al finalizar los 10 controles, obtendras:
+5. Al finalizar los 10 controles, obtendrás:
    - Score de madurez global (0-100%)
    - Score por control individual
    - Recomendaciones contextualizadas
@@ -175,14 +175,14 @@ npm run build
 
 | Nivel | Rango | Significado |
 |-------|-------|-------------|
-| Critico | 0-25% | Exposicion critica. Acciones inmediatas requeridas |
+| Crítico | 0-25% | Exposición crítica. Acciones inmediatas requeridas |
 | Bajo | 26-50% | Brechas significativas. Priorizar controles base |
-| Medio | 51-75% | Fundamentos establecidos. Fortalecer implementacion |
+| Medio | 51-75% | Fundamentos establecidos. Fortalecer implementación |
 | Alto | 76-100% | Madurez alta. Mantener y mejorar continuamente |
 
 ---
 
-## Configuracion
+## Configuración
 
 ### `next.config.ts`
 
@@ -201,7 +201,7 @@ const nextConfig: NextConfig = {
 
 ```typescript
 export const APP_VERSION = "2.1";    // Incrementar en cada deploy
-export const APP_DATE = "2026-03-30"; // Fecha del ultimo deploy
+export const APP_DATE = "2026-03-30"; // Fecha del último deploy
 export const APP_NAME = "TTPSEC Asesor ANCI";
 ```
 
@@ -211,33 +211,33 @@ export const APP_NAME = "TTPSEC Asesor ANCI";
 
 | # | Control | Objetivo | MITRE ATT&CK |
 |---|---------|----------|--------------|
-| C0 | Gestion de Activos | Inventario y gobierno de activos | T1595, T1590 |
-| C1 | Actualizar Periodicamente | Gestion de vulnerabilidades | T1190, T1068, T1210 |
-| C2 | Capacitar Periodicamente | Reduccion del riesgo humano | T1566, T1204 |
+| C0 | Gestión de Activos | Inventario y gobierno de activos | T1595, T1590 |
+| C1 | Actualizar Periódicamente | Gestión de vulnerabilidades | T1190, T1068, T1210 |
+| C2 | Capacitar Periódicamente | Reducción del riesgo humano | T1566, T1204 |
 | C3 | Minimizar Privilegios | Control de accesos | T1078, T1068, T1055 |
-| C4 | Respaldar Informacion | Continuidad operativa | T1486, T1490, T1485 |
-| C5 | Asegurar Redes | Proteccion de comunicaciones | T1021, T1046, T1018 |
-| C6 | Asegurar Equipos | Proteccion de activos | T1059, T1547, T1053 |
-| C7 | Monitorear en Tiempo Real | Deteccion temprana | T1071, T1041, T1562 |
-| C8 | Uso de MFA | Autenticacion robusta | T1078, T1556, T1110 |
-| C9 | Gestor de Contrasenas | Gestion de credenciales | T1555, T1003, T1110 |
+| C4 | Respaldar Información | Continuidad operativa | T1486, T1490, T1485 |
+| C5 | Asegurar Redes | Protección de comunicaciones | T1021, T1046, T1018 |
+| C6 | Asegurar Equipos | Protección de activos | T1059, T1547, T1053 |
+| C7 | Monitorear en Tiempo Real | Detección temprana | T1071, T1041, T1562 |
+| C8 | Uso de MFA | Autenticación robusta | T1078, T1556, T1110 |
+| C9 | Gestor de Contraseñas | Gestión de credenciales | T1555, T1003, T1110 |
 
 ---
 
 ## Marcos de Referencia
 
-| Marco | Version | Uso en la herramienta |
+| Marco | Versión | Uso en la herramienta |
 |-------|---------|----------------------|
 | ISO/IEC 27001 | 2022 | Mapeo de controles A.x |
 | ISO/IEC 27002 | 2022 | Controles detallados |
-| ISO/IEC 27035 | 2023 | Gestion de incidentes |
+| ISO/IEC 27035 | 2023 | Gestión de incidentes |
 | NIST CSF | 2.0 (2024) | Funciones PR, DE, RC |
 | NIST 800-53 | Rev. 5 | Controles federales |
 | CIS Controls | v8.1 | Controles CIS 1-18 |
 | ISA/IEC 62443 | 2018-2023 | Seguridad industrial OT |
-| NERC CIP | 2023 | Regulacion sector electrico |
-| SCF | 2024 | Capa de normalizacion |
-| MITRE ATT&CK | v15+ | Tecnicas de ataque |
+| NERC CIP | 2023 | Regulación sector eléctrico |
+| SCF | 2024 | Capa de normalización |
+| MITRE ATT&CK | v15+ | Técnicas de ataque |
 
 ---
 
@@ -245,8 +245,8 @@ export const APP_NAME = "TTPSEC Asesor ANCI";
 
 ### Modelo de seguridad
 
-- **Zero Data Collection**: ningun dato sale del navegador del usuario
-- **No Backend**: la aplicacion es 100% client-side (static export)
+- **Zero Data Collection**: ningún dato sale del navegador del usuario
+- **No Backend**: la aplicación es 100% client-side (static export)
 - **No Cookies**: no se usan cookies, localStorage, ni sessionStorage
 - **No Analytics**: no hay scripts de tracking, GA, ni pixel
 - **No Dependencies externas en runtime**: no se cargan CDNs, fonts externas, ni APIs
@@ -268,29 +268,29 @@ Consulta [SECURITY.md](./SECURITY.md) para el proceso de reporte de vulnerabilid
 ## Testing
 
 ```bash
-# Verificar build de produccion
+# Verificar build de producción
 npm run build
 
-# Verificar que el export estatico funciona
+# Verificar que el export estático funciona
 npx serve out/
 ```
 
-La verificacion se realiza mediante:
-- Build de produccion exitoso
+La verificación se realiza mediante:
+- Build de producción exitoso
 - Preview visual en navegador
-- Validacion de funcionalidad de botones (exportar, imprimir, nueva evaluacion)
-- Verificacion responsive (mobile/tablet/desktop)
+- Validación de funcionalidad de botones (exportar, imprimir, nueva evaluación)
+- Verificación responsive (mobile/tablet/desktop)
 
 ---
 
-## Contribucion
+## Contribución
 
-Consulta [CONTRIBUTING.md](./CONTRIBUTING.md) para las guias de contribucion.
+Consulta [CONTRIBUTING.md](./CONTRIBUTING.md) para las guías de contribución.
 
-**Resumen rapido:**
+**Resumen rápido:**
 1. Fork del repositorio
 2. Crea un branch (`git checkout -b feature/mi-feature`)
-3. Commit con Conventional Commits (`feat: descripcion`)
+3. Commit con Conventional Commits (`feat: descripción`)
 4. Push y Pull Request
 
 ---
@@ -299,22 +299,22 @@ Consulta [CONTRIBUTING.md](./CONTRIBUTING.md) para las guias de contribucion.
 
 - [x] 10 controles con preguntas ponderadas
 - [x] 3 contextos organizacionales
-- [x] Exportacion HTML y PDF
+- [x] Exportación HTML y PDF
 - [x] Tabla de mapping interactiva
 - [x] Portada profesional dark hero
-- [x] Footer con version y fecha
+- [x] Footer con versión y fecha
 - [x] Responsive mobile optimizado
 - [ ] Modo dark completo
-- [ ] Exportacion a Excel/CSV
+- [ ] Exportación a Excel/CSV
 - [ ] Comparativa entre evaluaciones (localStorage opcional)
-- [ ] Idioma ingles
+- [ ] Idioma inglés
 - [ ] PWA offline mode
 
 ---
 
 ## Licencia
 
-Distribuido bajo la licencia **MIT**. Ver [LICENSE](./LICENSE) para mas informacion.
+Distribuido bajo la licencia **MIT**. Ver [LICENSE](./LICENSE) para más información.
 
 ---
 
@@ -329,8 +329,8 @@ Distribuido bajo la licencia **MIT**. Ver [LICENSE](./LICENSE) para mas informac
 
 ### Disclaimer
 
-> **Plataforma academica y educativa.** Este sitio no esta afiliado, asociado ni respaldado por ningun ente gubernamental, la ANCI, ni el Gobierno de Chile. No reemplaza una auditoria formal de ciberseguridad ni constituye asesoria legal.
+> **Plataforma académica y educativa.** Este sitio no está afiliado, asociado ni respaldado por ningún ente gubernamental, la ANCI, ni el Gobierno de Chile. No reemplaza una auditoría formal de ciberseguridad ni constituye asesoría legal.
 
 ---
 
-*TTPSEC — Software para el bien comun*
+*TTPSEC — Software para el bien común*
