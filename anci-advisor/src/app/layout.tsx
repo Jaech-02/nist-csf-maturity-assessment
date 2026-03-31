@@ -47,6 +47,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="referrer" content="no-referrer" />
         <meta name="theme-color" content="#1e40af" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="license" href="https://github.com/ttpsecspa/ANCI/blob/main/LICENSE" />
       </head>
       <body className="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
         {children}
