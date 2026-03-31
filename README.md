@@ -4,14 +4,17 @@
 [![Estado](https://img.shields.io/badge/Estado-Stable-brightgreen)]()
 [![OWASP](https://img.shields.io/badge/OWASP-Compliant-blue)]()
 [![Version](https://img.shields.io/badge/v2.1-2026--03--30-blue)]()
+[![Demo](https://img.shields.io/badge/Demo-Live-ff6b6b?logo=github)](https://ttpsecspa.github.io/ANCI/)
 
 # TTPSEC Asesor ANCI
 
 *Evaluador anónimo de madurez en ciberseguridad basado en los 9 Básicos de la ANCI + Control 0: Gestión de Activos*
 
-| Stack | Licencia | Estado | Versión | Deploy |
-|-------|----------|--------|---------|--------|
-| Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.1 | [GitHub Pages](https://ttpsecspa.github.io/ANCI/) |
+### [Ver Demo en Vivo](https://ttpsecspa.github.io/ANCI/)
+
+| Stack | Licencia | Estado | Versión | Demo |
+|-------|----------|--------|---------|------|
+| Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.1 | [ttpsecspa.github.io/ANCI](https://ttpsecspa.github.io/ANCI/) |
 
 ---
 
