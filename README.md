@@ -256,11 +256,13 @@ export const APP_NAME = "TTPSEC Asesor ANCI";
 - **CSP Ready**: compatible con Content-Security-Policy restrictiva
 - **Referrer Policy**: `no-referrer` configurado en meta tags
 
-### OWASP / CWE
+### OWASP / CWE / ASVS
 
 Consulta los documentos detallados:
-- [docs/OWASP_MAPPING.md](./docs/OWASP_MAPPING.md) — OWASP Top 10:2021 mapping
-- [docs/CWE_MAPPING.md](./docs/CWE_MAPPING.md) — CWE mapping relevante
+- [docs/OWASP_MAPPING.md](./docs/OWASP_MAPPING.md) — **OWASP Top 10:2025** mapping (A01-A10:2025)
+- [docs/CWE_MAPPING.md](./docs/CWE_MAPPING.md) — CWE mapping relevante al stack
+
+> **Nota:** El OWASP Top 10 es un documento de awareness (mínimo basal). Para un estándar verificable y testeable, consultar [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/).
 
 ### Reporte de vulnerabilidades
 
