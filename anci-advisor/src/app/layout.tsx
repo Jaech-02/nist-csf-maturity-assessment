@@ -1,15 +1,31 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
+const METADATA_BASE_FALLBACK = "http://localhost:3000";
+
+function resolveMetadataBase(): URL {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (!raw) {
+    return new URL(`${METADATA_BASE_FALLBACK}/`);
+  }
+  const origin = raw.replace(/\/$/, "");
+  try {
+    return new URL(`${origin}/`);
+  } catch {
+    return new URL(`${METADATA_BASE_FALLBACK}/`);
+  }
+}
+
 export const metadata: Metadata = {
+  metadataBase: resolveMetadataBase(),
   title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
-  description: "Evaluación anónima de ciberseguridad basada en los 9 Básicos de la ANCI. Sin registro, sin cookies, sin tracking. Recomendaciones ISO 27001, NIST CSF, NIST 800-53, CIS v8.1, ISA 62443, NERC CIP.",
+  description: "Evaluacion anonima basada en los 9 Basicos de la ANCI y Control 0. Sin registro ni tracking. Mapeo y recomendaciones alineadas a NIST CSF 2.0.",
   robots: "index, follow",
   authors: [{ name: "TTPSEC", url: "https://www.ttpsec.ai" }],
-  keywords: ["ciberseguridad", "ANCI", "9 básicos", "ISO 27001", "NIST CSF", "NIST 800-53", "CIS Controls", "ISA 62443", "NERC CIP", "evaluación", "Chile", "TTPSEC", "seguridad informática"],
+  keywords: ["ciberseguridad", "ANCI", "9 basicos", "NIST CSF 2.0", "NIST Cybersecurity Framework", "evaluacion", "Chile", "TTPSEC", "madurez"],
   openGraph: {
     title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
-    description: "Evalúa el nivel de madurez de tu organización en ciberseguridad. 100% anónimo, sin registro, con recomendaciones alineadas a ISO, NIST, CIS, ISA y NERC CIP.",
+    description: "Evalua la madurez en ciberseguridad con los Basicos ANCI. 100% anonimo. Recomendaciones alineadas a NIST CSF 2.0.",
     url: "https://www.ttpsec.ai",
     siteName: "TTPSEC - Asesor ANCI",
     locale: "es_CL",
@@ -26,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
-    description: "Evalúa tu ciberseguridad con los 9 Básicos de la ANCI. Anónimo, seguro, sin registro. Recomendaciones ISO, NIST, CIS, ISA, NERC CIP.",
+    description: "Evalua tu ciberseguridad con los 9 Basicos de la ANCI. Anonimo y local. Marco de referencia: NIST CSF 2.0.",
     images: ["/og-image.png"],
     creator: "@ttpsec",
   },

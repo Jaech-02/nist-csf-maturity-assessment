@@ -5,6 +5,27 @@ Todos los cambios notables del proyecto se documentan en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [2.2] - 2026-04-05
+
+### Added
+- `docs/NIST_CSF_MAPPING.md`: tabla de mapeo alineada a `anci-advisor/src/lib/data.ts`, con leyenda y columna de fundamento por control (`mappingWhy`)
+- Campo `mappingWhy` en `nistCsf` (`data.ts`): fundamento por control en tabla Mapeo NIST, resultados, informe HTML exportado y bloque desplegable en cada pantalla de preguntas
+
+### Changed
+- Mapeo NIST CSF 2.0 alineado al nucleo oficial: PR.AA (acceso/autenticacion), PR.PS, PR.IR; subcategorias con formato ID.AM-01, PR.AA-05, etc.
+- C1 asociado a ID.RA + PR.PS; C5 a PR.IR; C9 a PR.AA-01 (credenciales)
+- Documentacion reducida al tema del repo: eliminados plantillas LLM, guia de estilos generica, OWASP/CWE separados y CONTRIBUTING duplicado; README y `NIST_CSF_MAPPING.md` quedan como referencia principal
+- `layout.tsx`: funcion `resolveMetadataBase()` para `metadataBase` estable (env vacio o URL invalida no rompen el build)
+- `LICENSE`: copyright del upstream [ttpsecspa/ANCI](https://github.com/ttpsecspa/ANCI) (2026 TTPSEC SPA)
+- `README`: seccion Procedencia con enlace explicito al repositorio base
+
+### Fixed
+- CTA "Comenzar Evaluacion": capas del hero con `z-[45]` y fondos decorativos con `pointer-events-none` para que el clic no lo intercepte la barra de navegacion (`z-40`)
+
+### Removed
+- `docs/PROMPT-DOCUMENTACION-REPO.md`, `TTPSEC-STYLE-GUIDE.md`, `docs/OWASP_MAPPING.md`, `docs/CWE_MAPPING.md`, `CONTRIBUTING.md`
+- Carpeta `.github/` (plantillas de issues; no requeridas para la app)
+
 ## [2.1] - 2026-03-30
 
 ### Added
@@ -104,5 +125,5 @@ y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Mapeo a 8 marcos internacionales
 - Exportación de informe HTML
 - Diseño responsive con Tailwind CSS
-- Static export para GitHub Pages
+- Static export para hosting estatico
 - Zero data collection: sin cookies, sin tracking, sin backend

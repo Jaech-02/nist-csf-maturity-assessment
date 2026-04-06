@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CONTROLS, CONTEXT_RECOMMENDATIONS, getMaturityLevel, GRADIENT_COLORS, type Control } from "@/lib/data";
 import { APP_VERSION, APP_DATE } from "@/lib/version";
 
@@ -14,6 +14,13 @@ export default function Home() {
   const [answers, setAnswers] = useState<Answers>({});
   const [context, setContext] = useState<OrgContext>("ti");
   const [openCards, setOpenCards] = useState<Set<string>>(new Set());
+  const [sharePageUrl, setSharePageUrl] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSharePageUrl(`${window.location.origin}${window.location.pathname}`);
+    }
+  }, []);
 
   const progress = Math.round((screen / (TOTAL + 1)) * 100);
 
@@ -70,7 +77,12 @@ h1{color:#1e40af;border-bottom:3px solid #3b82f6;padding-bottom:.5rem}h2{color:#
     html += `<h1>Informe de Evaluación de Ciberseguridad</h1>`;
     html += `<p><strong>Fecha:</strong> ${date} | <strong>Contexto:</strong> ${ctx.label}</p>`;
     html += `<p><strong>Metodología:</strong> 9 Básicos de la Ciberseguridad (ANCI) + Control 0</p>`;
-    html += `<p><strong>Marcos:</strong> ISO 27001:2022 | NIST CSF 2.0 | NIST 800-53 Rev.5 | CIS v8.1 | ISA/IEC 62443 | NERC CIP</p>`;
+    html += `<p><strong>Marco de referencia:</strong> NIST Cybersecurity Framework (CSF) 2.0</p>`;
+    html += `<div style="font-size:.78rem;color:#475569;margin:.75rem 0 1rem;padding:.75rem;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px"><strong style="color:#1e40af">Leyenda del mapeo NIST CSF 2.0</strong><br>
+<strong>Funcion NIST:</strong> una de las seis del nucleo (GV, ID, PR, DE, RS, RC).<br>
+<strong>Categoria NIST:</strong> codigo bajo esa funcion (p. ej. ID.AM, PR.AA). Un control puede listar varias.<br>
+<strong>Subcategoria (ejemplo):</strong> item oficial tipo PR.AA-05; es un ejemplo representativo, no el catalogo completo.<br>
+<strong>Objetivo (ANCI):</strong> eje en lenguaje de los basicos ANCI, no es etiqueta NIST. Ver <code>docs/NIST_CSF_MAPPING.md</code> en el repositorio.</div>`;
     html += `<div class="score">${overall}% <span class="badge b-${level.cls}">${level.label}</span></div>`;
     html += `<p style="text-align:center">${level.desc}</p>`;
     html += `<p style="text-align:center;font-size:.85rem">${ctx.general}</p>`;
@@ -83,10 +95,12 @@ h1{color:#1e40af;border-bottom:3px solid #3b82f6;padding-bottom:.5rem}h2{color:#
       html += `<p style="font-size:.82rem;color:#64748b">${s.control.description}</p>`;
       html += `<h4 style="margin-top:.75rem;font-size:.82rem;color:#1e40af">Recomendaciones</h4>`;
       recs.forEach((r) => { html += `<div class="rec">${r}</div>`; });
-      html += `<h4 style="margin-top:.75rem;font-size:.82rem;color:#1e40af">Mapeo a Marcos</h4>`;
-      Object.entries(s.control.frameworks).forEach(([fw, ref]) => {
-        html += `<div class="fw"><strong>${fw}:</strong> ${ref}</div>`;
-      });
+      html += `<h4 style="margin-top:.75rem;font-size:.82rem;color:#1e40af">Alineacion NIST CSF 2.0</h4>`;
+      const n = s.control.nistCsf;
+      html += `<div class="fw"><strong>Objetivo ANCI:</strong> ${n.objective}</div>`;
+      html += `<div class="fw"><strong>Funcion y categoria NIST:</strong> ${n.functionCategory}</div>`;
+      html += `<div class="fw"><strong>Ejemplo de subcategoria:</strong> ${n.subcategoryExample}</div>`;
+      html += `<div class="fw"><strong>Por que este NIST:</strong> ${n.mappingWhy}</div>`;
       html += `<h4 style="margin-top:.75rem;font-size:.82rem;color:#dc2626">MITRE ATT&CK</h4>`;
       html += `<p style="font-size:.78rem">${s.control.mitre.join(" | ")}</p></div>`;
     });
@@ -96,7 +110,7 @@ Este sitio <strong>no está afiliado, asociado ni respaldado</strong> por ningú
 No reemplaza una auditoría formal de ciberseguridad ni constituye asesoría legal.
 Herramienta independiente desarrollada por <strong>TTPSEC</strong>, alineada con los 9 Básicos de la Ciberseguridad publicados por la ANCI.
 Ningún dato fue almacenado, transmitido ni procesado fuera de su navegador.
-Marcos de referencia: ISO/IEC 27001:2022, NIST CSF 2.0, NIST 800-53 Rev.5, CIS Controls v8.1, ISA/IEC 62443, NERC CIP.
+Marco de referencia: NIST Cybersecurity Framework (CSF) 2.0.
 Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chile.
 <br><br><strong>www.ttpsec.ai</strong> — Software para el bien común | Licencia MIT</div></body></html>`;
 
@@ -116,7 +130,7 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
         <div className="max-w-6xl mx-auto px-3 md:px-4 py-2 md:py-3 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 md:gap-3 min-w-0">
-            <img src={`${process.env.NODE_ENV === 'production' ? '/ANCI' : ''}/logo-ttpsec.png`} alt="TTPSEC" className="h-8 md:h-10 w-auto flex-shrink-0" />
+            <img src="/logo-ttpsec.png" alt="TTPSEC" className="h-8 md:h-10 w-auto flex-shrink-0" />
             <div className="min-w-0">
               <h1 className="text-sm md:text-lg font-black text-blue-900 tracking-tight">TTPSEC</h1>
               <p className="text-[10px] md:text-[11px] text-slate-500 font-medium truncate">Asesor ANCI | 9 Básicos</p>
@@ -144,7 +158,7 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
               <span className="text-slate-300">|</span>
               <span className="text-xs text-slate-400">10 Controles</span>
               <span className="text-slate-300">|</span>
-              <button onClick={() => goTo(TOTAL + 2)} className="text-xs text-slate-400 hover:text-blue-600 font-semibold transition-colors">Mapping</button>
+              <button onClick={() => goTo(TOTAL + 2)} className="text-xs text-slate-400 hover:text-blue-600 font-semibold transition-colors">Mapeo NIST</button>
             </div>
           ) : (
             <>
@@ -172,7 +186,7 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
                   Resultados
                 </button>
                 <button onClick={() => goTo(TOTAL + 2)} className={`text-[11px] px-3 py-1.5 rounded-lg whitespace-nowrap font-semibold transition-all ${screen === TOTAL + 2 ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/40" : "text-slate-400 hover:text-white hover:bg-slate-700 border border-slate-700"}`}>
-                  Mapping
+                  Mapeo NIST
                 </button>
               </div>
             </>
@@ -186,19 +200,18 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
 
           {/* WELCOME — HERO COVER */}
           {screen === 0 && (
-            <div className="animate-in -mx-4 -mt-8">
+            <div className="animate-in -mx-4">
               {/* ═══ DARK HERO ═══ */}
               <section className="relative bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 overflow-hidden rounded-b-3xl">
-                {/* Grid pattern overlay */}
-                <div className="absolute inset-0 hero-grid-pattern opacity-60" />
-                {/* Radial glow */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl" />
+                {/* Decoracion: no interceptar clics (el nav sticky usa z-40; el contenido debe quedar encima) */}
+                <div className="absolute inset-0 hero-grid-pattern opacity-60 pointer-events-none z-0" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-3xl pointer-events-none z-0" />
 
-                <div className="relative z-10 max-w-3xl mx-auto px-4 md:px-6 py-10 md:py-20 text-center">
+                <div className="relative z-[45] max-w-3xl mx-auto px-4 md:px-6 py-10 md:py-20 text-center pointer-events-auto">
                   {/* Logo */}
                   <div className="animate-fade-in-up">
                     <img
-                      src={`${process.env.NODE_ENV === 'production' ? '/ANCI' : ''}/logo-ttpsec.png`}
+                      src="/logo-ttpsec.png"
                       alt="TTPSEC" className="h-16 md:h-28 w-auto mx-auto mb-4 md:mb-6 drop-shadow-2xl animate-float"
                     />
                   </div>
@@ -230,7 +243,7 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
 
                   {/* Framework chips */}
                   <div className="animate-fade-in-up-d4 hidden md:flex flex-wrap justify-center gap-1.5 mb-10">
-                    {["ISO 27001", "NIST CSF 2.0", "NIST 800-53", "CIS v8.1", "ISA 62443", "NERC CIP"].map((fw) => (
+                    {["NIST CSF 2.0"].map((fw) => (
                       <span key={fw} className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-md bg-white/5 text-blue-300/80 border border-white/10">
                         {fw}
                       </span>
@@ -238,33 +251,44 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
                   </div>
 
                   {/* CTA */}
-                  <div className="animate-fade-in-up-d5">
-                    <button onClick={() => goTo(1)}
-                      className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white font-bold px-8 md:px-10 py-3 md:py-4 rounded-2xl text-base md:text-lg shadow-2xl shadow-blue-500/25 hover:-translate-y-1 transition-all animate-pulse-glow">
-                      Comenzar Evaluación
+                  <div className="animate-fade-in-up-d5 relative z-[45]">
+                    <button
+                      type="button"
+                      onClick={() => goTo(1)}
+                      className="cursor-pointer bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-400 hover:to-indigo-400 text-white font-bold px-8 md:px-10 py-3 md:py-4 rounded-2xl text-base md:text-lg shadow-2xl shadow-blue-500/25 hover:-translate-y-1 transition-all animate-pulse-glow"
+                    >
+                      Comenzar Evaluacion
                     </button>
                   </div>
 
                   {/* Social share */}
                   <div className="animate-fade-in-up-d5 flex items-center justify-center gap-1.5 md:gap-2 mt-5 md:mt-8 flex-wrap">
                     <span className="text-[10px] md:text-[11px] text-white/40 font-semibold mr-0.5">Compartir:</span>
-                    <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://ttpsecspa.github.io/ANCI/" target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors">
+                    <a href={sharePageUrl ? `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(sharePageUrl)}` : "#"}
+                      onClick={!sharePageUrl ? (e) => e.preventDefault() : undefined}
+                      target="_blank" rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors ${!sharePageUrl ? "opacity-50 pointer-events-none" : ""}`}>
                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                       LinkedIn
                     </a>
-                    <a href="https://twitter.com/intent/tweet?text=Eval%C3%BAa%20tu%20ciberseguridad%20con%20los%209%20B%C3%A1sicos%20de%20la%20ANCI&url=https://ttpsecspa.github.io/ANCI/" target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors">
+                    <a href={sharePageUrl ? `https://twitter.com/intent/tweet?text=${encodeURIComponent("Evalua tu ciberseguridad con los 9 Basicos de la ANCI")}&url=${encodeURIComponent(sharePageUrl)}` : "#"}
+                      onClick={!sharePageUrl ? (e) => e.preventDefault() : undefined}
+                      target="_blank" rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors ${!sharePageUrl ? "opacity-50 pointer-events-none" : ""}`}>
                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                       X
                     </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://ttpsecspa.github.io/ANCI/" target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors">
+                    <a href={sharePageUrl ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(sharePageUrl)}` : "#"}
+                      onClick={!sharePageUrl ? (e) => e.preventDefault() : undefined}
+                      target="_blank" rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors ${!sharePageUrl ? "opacity-50 pointer-events-none" : ""}`}>
                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                       Facebook
                     </a>
-                    <a href="https://wa.me/?text=Eval%C3%BAa%20tu%20ciberseguridad%20con%20los%209%20B%C3%A1sicos%20de%20la%20ANCI%20https://ttpsecspa.github.io/ANCI/" target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors">
+                    <a href={sharePageUrl ? `https://wa.me/?text=${encodeURIComponent(`Evalua tu ciberseguridad con los 9 Basicos de la ANCI ${sharePageUrl}`)}` : "#"}
+                      onClick={!sharePageUrl ? (e) => e.preventDefault() : undefined}
+                      target="_blank" rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white/80 text-xs font-bold transition-colors ${!sharePageUrl ? "opacity-50 pointer-events-none" : ""}`}>
                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                       WhatsApp
                     </a>
@@ -284,7 +308,7 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
                 <div className="grid sm:grid-cols-3 gap-4 mb-8">
                   {[
                     { icon: "\uD83D\uDD12", title: "100% Anónimo", desc: "Sin registro, sin cookies, sin tracking. Tu evaluación es completamente privada." },
-                    { icon: "\uD83C\uDF10", title: "Marcos Internacionales", desc: "ISO 27001, NIST CSF 2.0, NIST 800-53, CIS v8.1, ISA 62443, NERC CIP." },
+                    { icon: "\uD83C\uDF10", title: "NIST CSF 2.0", desc: "Recomendaciones y mapeo alineados al Cybersecurity Framework 2.0 del NIST." },
                     { icon: "\u26A1", title: "Resultados Inmediatos", desc: "Procesamiento 100% en tu navegador. Ningún dato sale de tu dispositivo." },
                   ].map((f) => (
                     <div key={f.title} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md hover:border-blue-300 hover:-translate-y-0.5 transition-all">
@@ -362,50 +386,33 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
             </div>
           )}
 
-          {/* MAPPING TABLE */}
+          {/* Tabla mapeo ANCI - NIST CSF 2.0 */}
           {screen === TOTAL + 2 && (
             <div className="animate-in">
-              <h2 className="text-2xl md:text-3xl font-black text-center text-slate-900 tracking-tight mb-2">Mapping de Controles</h2>
-              <p className="text-sm text-slate-500 text-center mb-6">Tabla de correspondencia entre los 9 Básicos ANCI y marcos internacionales TI, OT e Infraestructura Crítica</p>
+              <h2 className="text-2xl md:text-3xl font-black text-center text-slate-900 tracking-tight mb-2">Mapeo ANCI a NIST CSF 2.0</h2>
+              <p className="text-sm text-slate-500 text-center mb-4">Cada fila enlaza un control ANCI con la funcion, la categoria y un ejemplo de subcategoria del nucleo oficial.</p>
+              <NistMappingLegend className="mb-6 max-w-3xl mx-auto" />
               <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-md bg-white">
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
-                      <th className="px-3 py-3 font-bold text-[11px]">#</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">Básico</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">Objetivo de Control</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">ISO 27001/27002</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">ISO 27035</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">NIST CSF</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">CIS v8</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">SCF</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">ISA/IEC 62443</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">NERC CIP</th>
+                      <th className="px-3 py-3 font-bold text-[11px]">Control</th>
+                      <th className="px-3 py-3 font-bold text-[11px]">Nombre en la app</th>
+                      <th className="px-3 py-3 font-bold text-[11px]">Objetivo (ANCI)</th>
+                      <th className="px-3 py-3 font-bold text-[11px]">Funcion y categoria NIST</th>
+                      <th className="px-3 py-3 font-bold text-[11px] min-w-[200px]">Subcategoria ejemplo</th>
+                      <th className="px-3 py-3 font-bold text-[11px] min-w-[280px]">Por que este NIST</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {([
-                      { n: 1, name: "Actualizar periódicamente", obj: "Gestión de vulnerabilidades", iso: "A.8.8, A.8.9", iso35: "Preparación", nist: "PR.IP", cis: "CIS 7", scf: "TVM", isa: "SR-5, CR-7", nerc: "CIP-007" },
-                      { n: 2, name: "Capacitar periódicamente", obj: "Reducción del riesgo humano", iso: "A.6.3", iso35: "Preparación", nist: "PR.AT", cis: "CIS 14", scf: "HRS", isa: "62443-2-1", nerc: "CIP-004" },
-                      { n: 3, name: "Minimizar privilegios", obj: "Control de accesos", iso: "A.8.2", iso35: "Preparación", nist: "PR.AC", cis: "CIS 5", scf: "IAM", isa: "SR-2", nerc: "CIP-004" },
-                      { n: 4, name: "Respaldar información", obj: "Continuidad operativa", iso: "A.8.13", iso35: "Recuperación", nist: "RC", cis: "CIS 11", scf: "BCP/DR", isa: "CR-6", nerc: "CIP-009" },
-                      { n: 5, name: "Asegurar redes", obj: "Protección de comunicaciones", iso: "A.8.20", iso35: "Detección", nist: "PR.PT", cis: "CIS 12", scf: "NET", isa: "SR-3", nerc: "CIP-005" },
-                      { n: 6, name: "Asegurar equipos", obj: "Protección de activos", iso: "A.8.1, A.8.7", iso35: "Preparación", nist: "PR.PT", cis: "CIS 10", scf: "END", isa: "SR-7", nerc: "CIP-007" },
-                      { n: 7, name: "Monitorear en tiempo real", obj: "Detección temprana", iso: "A.8.16", iso35: "Detección", nist: "DE.CM", cis: "CIS 8", scf: "LOG", isa: "SR-6", nerc: "CIP-007" },
-                      { n: 8, name: "Uso de MFA", obj: "Autenticación robusta", iso: "A.8.5", iso35: "Prevención", nist: "PR.AC", cis: "CIS 6", scf: "IAM", isa: "SR-1", nerc: "CIP-005" },
-                      { n: 9, name: "Gestor de contraseñas", obj: "Gestión de credenciales", iso: "A.8.5", iso35: "Prevención", nist: "PR.AC", cis: "CIS 5", scf: "IAM", isa: "SR-1", nerc: "CIP-004" },
-                    ] as const).map((row, i) => (
-                      <tr key={row.n} className={`border-t border-slate-100 ${i % 2 === 0 ? "bg-white" : "bg-slate-50"} hover:bg-blue-50 transition-colors`}>
-                        <td className="px-3 py-2.5 font-black text-blue-700">{row.n}</td>
-                        <td className="px-3 py-2.5 font-bold text-slate-800">{row.name}</td>
-                        <td className="px-3 py-2.5 text-slate-600 italic">{row.obj}</td>
-                        <td className="px-3 py-2.5 font-mono text-blue-700 font-semibold">{row.iso}</td>
-                        <td className="px-3 py-2.5 text-slate-600">{row.iso35}</td>
-                        <td className="px-3 py-2.5 font-mono text-indigo-700 font-semibold">{row.nist}</td>
-                        <td className="px-3 py-2.5 font-mono text-emerald-700 font-semibold">{row.cis}</td>
-                        <td className="px-3 py-2.5 font-mono text-violet-700 font-semibold">{row.scf}</td>
-                        <td className="px-3 py-2.5 font-mono text-amber-700 font-semibold">{row.isa}</td>
-                        <td className="px-3 py-2.5 font-mono text-red-700 font-semibold">{row.nerc}</td>
+                    {CONTROLS.map((c, i) => (
+                      <tr key={c.id} className={`border-t border-slate-100 ${i % 2 === 0 ? "bg-white" : "bg-slate-50"} hover:bg-blue-50 transition-colors`}>
+                        <td className="px-3 py-2.5 font-black text-blue-700 whitespace-nowrap">C{c.number}</td>
+                        <td className="px-3 py-2.5 font-bold text-slate-800">{c.name}</td>
+                        <td className="px-3 py-2.5 text-slate-600">{c.nistCsf.objective}</td>
+                        <td className="px-3 py-2.5 font-mono text-indigo-800 font-semibold text-[11px] leading-snug">{c.nistCsf.functionCategory}</td>
+                        <td className="px-3 py-2.5 font-mono text-slate-700 text-[11px] leading-snug">{c.nistCsf.subcategoryExample}</td>
+                        <td className="px-3 py-2.5 text-slate-600 text-[11px] leading-snug max-w-md">{c.nistCsf.mappingWhy}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -413,8 +420,9 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
               </div>
               <div className="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-4">
                 <p className="text-[11px] text-slate-500 leading-relaxed">
-                  <strong className="text-slate-700">Claves OT:</strong> ISA/IEC 62443 introduce requisitos específicos para zonas, conduits, roles industriales y sistemas embebidos.
-                  NERC CIP transforma estos controles en obligaciones regulatorias exigibles para el sector eléctrico y energético.
+                  <strong className="text-slate-700">Referencia normativa:</strong>{" "}
+                  <a href="https://www.nist.gov/cyberframework" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">NIST Cybersecurity Framework 2.0</a>
+                  (CSWP 29). La leyenda de arriba define funcion, categoria y subcategoria; el detalle ampliado esta en <span className="font-mono text-slate-600">docs/NIST_CSF_MAPPING.md</span>.
                 </p>
               </div>
             </div>
@@ -429,7 +437,7 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             {/* Col 1: Brand */}
             <div className="flex flex-col items-center md:items-start">
-              <img src={`${process.env.NODE_ENV === 'production' ? '/ANCI' : ''}/logo-ttpsec.png`} alt="TTPSEC" className="h-12 w-auto mb-3" />
+              <img src="/logo-ttpsec.png" alt="TTPSEC" className="h-12 w-auto mb-3" />
               <a href="https://www.ttpsec.ai" target="_blank" rel="noopener noreferrer" className="text-base font-black text-white hover:text-blue-400 tracking-tight transition-colors">
                 www.ttpsec.ai
               </a>
@@ -444,11 +452,11 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
               </div>
             </div>
 
-            {/* Col 2: Frameworks */}
+            {/* Col 2: Marco NIST */}
             <div className="flex flex-col items-center">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">Marcos de referencia</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">Marco de referencia</p>
               <div className="flex flex-wrap justify-center gap-1.5">
-                {["ISO 27001", "NIST CSF 2.0", "NIST 800-53", "CIS v8.1", "ISA 62443", "NERC CIP"].map((fw) => (
+                {["NIST CSF 2.0"].map((fw) => (
                   <span key={fw} className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-white/5 text-blue-300/80 border border-white/10">{fw}</span>
                 ))}
               </div>
@@ -485,7 +493,7 @@ Ley aplicable: Ley 21.663 sobre Ciberseguridad e Infraestructura Crítica de Chi
               © {new Date().getFullYear()} TTPSEC SPA — Asesor ANCI 9 Básicos de Ciberseguridad
             </p>
             <p className="text-[10px] font-mono text-slate-600">
-              v{APP_VERSION} | {APP_DATE} | Ley 21.663 | MITRE ATT&CK
+              v{APP_VERSION} | {APP_DATE} | NIST CSF 2.0 | Ley 21.663 | MITRE ATT&CK
             </p>
           </div>
         </div>
@@ -514,6 +522,12 @@ function QuestionScreen({
         <div>
           <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">{control.icon} {control.name}</h2>
           <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">{control.description}</p>
+          <details className="mt-2 text-[11px] text-slate-600">
+            <summary className="cursor-pointer font-semibold text-blue-600 hover:text-blue-800 select-none">
+              Por que este NIST en este control
+            </summary>
+            <p className="mt-1.5 leading-relaxed border-l-2 border-blue-200 pl-3">{control.nistCsf.mappingWhy}</p>
+          </details>
         </div>
       </div>
 
@@ -578,6 +592,35 @@ function QuestionScreen({
   );
 }
 
+// Leyenda NIST CSF 2.0 (funcion / categoria / subcategoria) — sin tildes en strings de codigo
+function NistMappingLegend({ className = "" }: { className?: string }) {
+  return (
+    <div className={`rounded-xl border border-blue-200 bg-blue-50/80 p-4 text-left ${className}`}>
+      <p className="text-[11px] font-extrabold text-blue-800 uppercase tracking-wider mb-2">Leyenda del mapeo NIST CSF 2.0</p>
+      <ul className="text-[11px] text-slate-700 space-y-2 leading-relaxed list-none">
+        <li>
+          <span className="font-bold text-slate-900">Funcion NIST:</span> una de las seis del nucleo oficial (GV, ID, PR, DE, RS, RC). En la tabla aparece con nombre largo, p. ej. ID (Identify).
+        </li>
+        <li>
+          <span className="font-bold text-slate-900">Categoria NIST:</span> codigo despues del punto bajo esa funcion (p. ej. ID.AM, PR.AA, PR.PS). Agrupa temas del documento NIST. Un control puede mostrar varias si el tema cruza funciones.
+        </li>
+        <li>
+          <span className="font-bold text-slate-900">Subcategoria (ejemplo):</span> codigo oficial tipo PR.AA-05 o ID.AM-01 mas una frase del NIST. Es <span className="font-semibold">un ejemplo representativo</span> por control, no el listado completo de subcategorias que podrian aplicar.
+        </li>
+        <li>
+          <span className="font-bold text-slate-900">Objetivo (ANCI):</span> eje en lenguaje de los basicos ANCI; no es una etiqueta del NIST.
+        </li>
+        <li>
+          <span className="font-bold text-slate-900">Por que este NIST:</span> en cada control, texto que explica la razon del enlace a funcion, categoria y ejemplo (mismo contenido que en <span className="font-mono">data.ts</span>).
+        </li>
+      </ul>
+      <p className="text-[10px] text-slate-500 mt-3 leading-relaxed">
+        Fuente de los codigos: nucleo NIST CSF 2.0 (CSWP 29). Detalle en el repo: <span className="font-mono text-slate-600">docs/NIST_CSF_MAPPING.md</span>
+      </p>
+    </div>
+  );
+}
+
 // ─── RESULTS COMPONENT ───
 function Results({
   scores, context, openCards, toggleCard, onExport, onRestart,
@@ -637,6 +680,8 @@ function Results({
         ))}
       </div>
 
+      <NistMappingLegend className="mb-6" />
+
       {/* Detail Cards */}
       {scores.map((s) => {
         const isOpen = openCards.has(s.control.id);
@@ -661,18 +706,16 @@ function Results({
                     </div>
                   ))}
                 </div>
-                {/* Frameworks */}
-                <p className="text-[11px] font-extrabold text-blue-600 uppercase tracking-wider mb-2">Mapeo a Marcos Internacionales</p>
-                <div className="grid sm:grid-cols-2 gap-2 mb-4">
-                  {Object.entries(s.control.frameworks).map(([fw, ref]) => (
-                    <div key={fw} className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-                      <p className="text-[10px] font-extrabold text-blue-700 uppercase tracking-wide">{fw}</p>
-                      <p className="text-[11px] text-slate-500 font-mono leading-relaxed">{ref}</p>
-                    </div>
-                  ))}
+                {/* Alineacion NIST CSF 2.0 */}
+                <p className="text-[11px] font-extrabold text-blue-600 uppercase tracking-wider mb-2">Alineacion NIST CSF 2.0</p>
+                <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mb-4 space-y-1.5">
+                  <p className="text-[11px] text-slate-600"><span className="font-bold text-slate-800">Objetivo (ANCI):</span> {s.control.nistCsf.objective}</p>
+                  <p className="text-[11px] text-slate-600"><span className="font-bold text-slate-800">Funcion y categoria NIST:</span>{" "}<span className="font-mono text-indigo-800">{s.control.nistCsf.functionCategory}</span></p>
+                  <p className="text-[11px] text-slate-600"><span className="font-bold text-slate-800">Ejemplo de subcategoria:</span>{" "}<span className="font-mono text-slate-700">{s.control.nistCsf.subcategoryExample}</span></p>
+                  <p className="text-[11px] text-slate-600 leading-relaxed pt-1 border-t border-slate-200 mt-2"><span className="font-bold text-slate-800">Por que este NIST:</span> {s.control.nistCsf.mappingWhy}</p>
                 </div>
                 {/* MITRE */}
-                <p className="text-[11px] font-extrabold text-red-600 uppercase tracking-wider mb-1.5">MITRE ATT&CK Asociado</p>
+                <p className="text-[11px] font-extrabold text-red-600 uppercase tracking-wider mb-1.5">MITRE ATT&CK (contexto de amenazas)</p>
                 <div className="flex flex-wrap gap-1.5">
                   {s.control.mitre.map((m) => (
                     <span key={m} className="text-[10px] font-mono px-2 py-0.5 bg-red-50 text-red-600 rounded border border-red-200">{m}</span>
@@ -705,6 +748,7 @@ function Results({
           No reemplaza una auditoría formal de ciberseguridad ni constituye asesoría legal.
           Herramienta independiente desarrollada por <strong className="text-blue-800">TTPSEC</strong>.
           Ningún dato fue almacenado, transmitido ni procesado fuera de su navegador.
+          Marco de madurez: <strong className="text-slate-700">NIST CSF 2.0</strong>.
         </p>
         <p className="text-sm font-bold text-blue-800 mt-2">
           <a href="https://www.ttpsec.ai" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">www.ttpsec.ai</a>

@@ -1,14 +1,22 @@
 /**
- * ANCI 9 Básicos de Ciberseguridad - Data Engine
+ * ANCI 9 Basicos de Ciberseguridad - Data Engine
  * By TTPSEC - Based on ANCI 9 Basics
- * Mapping: ISO 27001/27002, NIST CSF 2.0, NIST 800-53 Rev.5,
- *          CIS Controls v8.1, ISA/IEC 62443, NERC CIP
+ * Mapping: NIST Cybersecurity Framework (CSF) 2.0
  * NO TRACKING | NO COOKIES | NO REGISTRATION | 100% CLIENT-SIDE
  */
 
 export interface Question {
   text: string;
   weight: number;
+}
+
+/** Mapeo TTPSEC / ANCI a NIST CSF 2.0 (funcion-categoria, ejemplo de subcategoria y fundamento). */
+export interface NistCsfMapping {
+  objective: string;
+  functionCategory: string;
+  subcategoryExample: string;
+  /** Por que este control ANCI se ancla a esas categorias / subcategoria NIST (texto para UI y docs). */
+  mappingWhy: string;
 }
 
 export interface Control {
@@ -21,7 +29,7 @@ export interface Control {
   riskIfMissing: string;
   mitre: string[];
   impact: string[];
-  frameworks: Record<string, string>;
+  nistCsf: NistCsfMapping;
   questions: Question[];
   recommendations: {
     low: string[];
@@ -50,13 +58,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Sin inventario de activos: no sabes qué actualizar, qué respaldar, qué monitorear, qué proteger ni qué impacta la continuidad.",
     mitre: ["T1018 - Remote System Discovery", "T1083 - File and Directory Discovery", "T1082 - System Information Discovery"],
     impact: ["Puntos ciegos en la superficie de ataque", "Activos no gestionados como vectores de entrada", "Incapacidad de respuesta ante incidentes"],
-    frameworks: {
-      "ISO 27001:2022": "A.5.9 Inventario de activos; A.5.10 Uso aceptable; A.5.11 Devolución de activos; A.8.1 Dispositivos de usuario",
-      "NIST CSF 2.0": "ID.AM-1, ID.AM-2, ID.AM-3, ID.AM-5 (Asset Management)",
-      "NIST 800-53": "CM-8 System Component Inventory; CM-9 Configuration Management Plan; PM-5 System Inventory",
-      "CIS v8.1": "Control 1: Inventario y Control de Activos Empresariales; Control 2: Inventario y Control de Activos de Software",
-      "ISA/IEC 62443": "SR 7.8 Control system component inventory; FR 7 Resource Availability",
-      "NERC CIP": "CIP-002 BES Cyber System Categorization; CIP-003 Security Management Controls",
+    nistCsf: {
+      objective: "Inventario de activos",
+      functionCategory: "ID (Identify) / ID.AM (Asset Management)",
+      subcategoryExample: "ID.AM-01 Inventarios de hardware de la organizacion",
+      mappingWhy:
+        "El Control 0 pide inventariar y gobernar activos; en CSF 2.0 eso es Identify / Asset Management (ID.AM). Sin inventario no hay base para riesgo, parches ni continuidad; ID.AM-01 nombra explicitamente inventarios de hardware como practica del nucleo.",
     },
     questions: [
       { text: "¿Existe un inventario actualizado de todos los activos de hardware?", weight: 3 },
@@ -95,13 +102,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Explotación directa de vulnerabilidades públicas (n-day), compromiso inicial sin credenciales y escalamiento rápido.",
     mitre: ["T1190 - Exploit Public-Facing Application", "T1068 - Exploitation for Privilege Escalation", "T1210 - Exploitation of Remote Services"],
     impact: ["Ransomware sin phishing", "Compromiso masivo automatizado", "Caída operacional por ataques oportunistas"],
-    frameworks: {
-      "ISO 27001:2022": "A.8.8 Gestión de vulnerabilidades técnicas; A.8.19 Instalación de software; A.8.32 Gestión de cambios",
-      "NIST CSF 2.0": "PR.PS-1 (Patch Management); ID.RA-1 (Vulnerability Identification)",
-      "NIST 800-53": "SI-2 Flaw Remediation; RA-5 Vulnerability Monitoring and Scanning; CM-3 Configuration Change Control",
-      "CIS v8.1": "Control 7: Gestión Continua de Vulnerabilidades (7.1-7.7)",
-      "ISA/IEC 62443": "SR 3.4 Software and information integrity; SR 7.6 Network and security configuration settings",
-      "NERC CIP": "CIP-007-6 R2 Patch Management; CIP-010-4 Configuration Change Management",
+    nistCsf: {
+      objective: "Vulnerabilidades",
+      functionCategory: "ID (Identify) / ID.RA y PR (Protect) / PR.PS (Platform Security)",
+      subcategoryExample: "PR.PS-02 Software mantenido o reemplazado segun el riesgo (parches)",
+      mappingWhy:
+        "Actualizar y parchear reduce vulnerabilidades conocidas: encaja en Protect / Platform Security (PR.PS) porque endurece la plataforma. ID.RA aparece porque el riesgo de explotacion depende de conocer debilidades y priorizar; PR.PS-02 es el item del nucleo sobre mantener o reemplazar software segun riesgo.",
     },
     questions: [
       { text: "¿Existe un proceso formal de gestión de parches con ventanas de actualización definidas?", weight: 3 },
@@ -140,13 +146,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "El usuario se convierte en vector de ataque sin fricción.",
     mitre: ["T1566.001 - Phishing: Spearphishing Attachment", "T1566.002 - Phishing: Link", "T1204 - User Execution"],
     impact: ["Robo de credenciales", "Instalación inicial de malware", "Movimiento lateral facilitado"],
-    frameworks: {
-      "ISO 27001:2022": "A.6.3 Concienciación, educación y formación; A.5.4 Responsabilidades de la dirección; A.6.1 Selección",
-      "NIST CSF 2.0": "PR.AT-1, PR.AT-2 (Awareness and Training)",
-      "NIST 800-53": "AT-1 Policy and Procedures; AT-2 Literacy Training and Awareness; AT-3 Role-Based Training",
-      "CIS v8.1": "Control 14: Concientización y Capacitación en Seguridad (14.1-14.9)",
-      "ISA/IEC 62443": "SR 1.13 Security awareness training; FR 1 Identification and Authentication Control",
-      "NERC CIP": "CIP-004-7 Personnel & Training (R1, R2, R3)",
+    nistCsf: {
+      objective: "Riesgo humano",
+      functionCategory: "PR (Protect) / PR.AT (Awareness and Training)",
+      subcategoryExample: "PR.AT-01 Capacitacion y concienciacion del personal",
+      mappingWhy:
+        "Capacitar al personal es conciencia y formacion en ciberseguridad; en CSF 2.0 esta bajo Protect / Awareness and Training (PR.AT). PR.AT-01 describe capacitacion y concienciacion del personal como control del nucleo.",
     },
     questions: [
       { text: "¿Se realizan capacitaciones de ciberseguridad al menos 2 veces al año?", weight: 3 },
@@ -185,13 +190,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Una cuenta comprometida equivale a control total del entorno.",
     mitre: ["T1078 - Valid Accounts", "T1068 - Privilege Escalation", "T1055 - Process Injection"],
     impact: ["Compromiso de dominio", "Bypass de controles de seguridad", "Persistencia profunda"],
-    frameworks: {
-      "ISO 27001:2022": "A.5.15 Control de acceso; A.5.18 Derechos de acceso; A.8.2 Acceso privilegiado; A.8.3 Restricción de acceso",
-      "NIST CSF 2.0": "PR.AA-5 (Access Control); PR.AA-6 (Least Privilege)",
-      "NIST 800-53": "AC-6 Least Privilege; AC-2 Account Management; AC-3 Access Enforcement; AC-5 Separation of Duties",
-      "CIS v8.1": "Control 5: Gestión de Cuentas (5.1-5.6); Control 6: Gestión de Control de Acceso (6.1-6.8)",
-      "ISA/IEC 62443": "SR 1.1 Human user identification and authentication; SR 2.1 Authorization enforcement; SR 1.3 Account management",
-      "NERC CIP": "CIP-004-7 R4/R5 Access Management; CIP-007-6 R5 System Access Controls",
+    nistCsf: {
+      objective: "Accesos",
+      functionCategory: "PR (Protect) / PR.AA (Identity, Authentication, Access Control)",
+      subcategoryExample: "PR.AA-05 Permisos con minimo privilegio y separacion de funciones",
+      mappingWhy:
+        "Minimizar privilegios y controlar accesos logicos es identidad, autenticacion y control de acceso en CSF 2.0 (PR.AA, no PR.AC de la version antigua). PR.AA-05 alinea directo con minimo privilegio y separacion de funciones.",
     },
     questions: [
       { text: "¿Se aplica el principio de mínimo privilegio en todas las cuentas?", weight: 3 },
@@ -230,13 +234,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Pérdida irreversible de información o dependencia total del atacante.",
     mitre: ["T1486 - Data Encrypted for Impact", "T1490 - Inhibit System Recovery", "T1485 - Data Destruction"],
     impact: ["Paralización operacional", "Extorsión (doble/triple)", "Daño reputacional severo"],
-    frameworks: {
-      "ISO 27001:2022": "A.8.13 Copias de seguridad de la información; A.8.14 Redundancia; A.5.30 Preparación TIC para continuidad",
-      "NIST CSF 2.0": "PR.DS-11 (Data Backup); RC.RP-1 (Recovery Planning)",
-      "NIST 800-53": "CP-9 System Backup; CP-10 System Recovery and Reconstitution; CP-6 Alternate Storage Site",
-      "CIS v8.1": "Control 11: Recuperación de Datos (11.1-11.5)",
-      "ISA/IEC 62443": "SR 7.3 Control system backup; SR 7.4 Control system recovery and reconstitution",
-      "NERC CIP": "CIP-009-6 Recovery Plans for BES Cyber Systems (R1, R2, R3)",
+    nistCsf: {
+      objective: "Continuidad",
+      functionCategory: "PR (Protect) / PR.DS y RC (Recover) / RC.RP",
+      subcategoryExample: "PR.DS-11 Copias de respaldo; RC.RP-01 Ejecucion del plan de recuperacion",
+      mappingWhy:
+        "Respaldos protegen datos (PR.DS: Data Security) y habilitan recuperacion; ejecutar recuperacion es Recover / RC.RP. Por eso se cruzan PR.DS-11 (copias de respaldo) con RC.RP-01 (plan de recuperacion).",
     },
     questions: [
       { text: "¿Se realizan respaldos automáticos de información crítica al menos diariamente?", weight: 3 },
@@ -275,13 +278,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Movimiento lateral sin fricción y propagación rápida del ataque.",
     mitre: ["T1021 - Remote Services", "T1046 - Network Service Scanning", "T1018 - Remote System Discovery"],
     impact: ["Ataques east-west", "Compromiso en cascada", "Pérdida de control del perímetro"],
-    frameworks: {
-      "ISO 27001:2022": "A.8.20 Seguridad de redes; A.8.21 Seguridad de servicios de red; A.8.22 Segregación en redes",
-      "NIST CSF 2.0": "PR.IR-1 (Network Security); PR.DS-1 (Data-in-Transit Protection)",
-      "NIST 800-53": "SC-7 Boundary Protection; AC-4 Information Flow Enforcement; SC-8 Transmission Confidentiality",
-      "CIS v8.1": "Control 12: Gestión de Infraestructura de Red (12.1-12.8); Control 13: Monitoreo y Defensa de Red",
-      "ISA/IEC 62443": "SR 5.1 Network segmentation; SR 5.2 Zone boundary protection; SR 5.3 Communication restrictions",
-      "NERC CIP": "CIP-005-7 Electronic Security Perimeter(s) (R1, R2); CIP-007-6 System Security Management",
+    nistCsf: {
+      objective: "Comunicaciones",
+      functionCategory: "PR (Protect) / PR.IR (Technology Infrastructure Resilience)",
+      subcategoryExample: "PR.IR-01 Redes protegidas de acceso logico no autorizado",
+      mappingWhy:
+        "Asegurar redes y segmentacion refuerza la infraestructura tecnologica frente a accesos no autorizados; en CSF 2.0 eso esta en Protect / Technology Infrastructure Resilience (PR.IR). PR.IR-01 habla de redes protegidas frente a acceso logico no autorizado.",
     },
     questions: [
       { text: "¿La red está segmentada con VLANs, firewalls o zonas de seguridad?", weight: 3 },
@@ -298,7 +300,7 @@ export const CONTROLS: Control[] = [
         "Forzar VPN para todo acceso remoto sin excepción",
       ],
       medium: [
-        "Implementar modelo de zonas y conductos según ISA/IEC 62443 para OT",
+        "Implementar modelo de zonas y conductos para segmentar TI y OT",
         "Desplegar IDS/IPS en segmentos críticos",
         "Implementar Network Access Control (NAC) para dispositivos que se conectan",
         "Documentar y revisar reglas de firewall semestralmente",
@@ -320,17 +322,16 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Persistencia silenciosa y ejecución continua de malware.",
     mitre: ["T1059 - Command and Scripting Interpreter", "T1547 - Boot or Logon Autostart Execution", "T1053 - Scheduled Task/Job"],
     impact: ["Backdoors persistentes", "Exfiltración lenta de datos", "Dificultad extrema de erradicación"],
-    frameworks: {
-      "ISO 27001:2022": "A.8.1 Dispositivos de punto final; A.8.7 Protección contra malware; A.8.19 Instalación de software",
-      "NIST CSF 2.0": "PR.PS-1 (Configuration Management); DE.CM-4 (Malicious Code Detection)",
-      "NIST 800-53": "CM-6 Configuration Settings; CM-7 Least Functionality; SI-3 Malicious Code Protection",
-      "CIS v8.1": "Control 4: Configuración Segura de Activos (4.1-4.12); Control 10: Defensas contra Malware (10.1-10.7)",
-      "ISA/IEC 62443": "SR 3.2 Malicious code protection; SR 3.4 Software and information integrity",
-      "NERC CIP": "CIP-007-6 R3 Malicious Code Prevention; CIP-010-4 R1 Configuration Monitoring",
+    nistCsf: {
+      objective: "Activos endpoints",
+      functionCategory: "PR (Protect) / PR.PS (Platform Security)",
+      subcategoryExample: "PR.PS-01 Gestion de configuracion; PR.PS-05 Ejecucion de software no autorizado impedida",
+      mappingWhy:
+        "Endpoints, EDR y endurecimiento son seguridad de plataforma (PR.PS): configuracion segura y control de lo que se ejecuta. PR.PS-01 y PR.PS-05 cubren gestion de configuracion y bloqueo de software no autorizado, tipicos de este basico.",
     },
     questions: [
       { text: "¿Todos los endpoints tienen solución EDR/XDR activa y actualizada?", weight: 3 },
-      { text: "¿Se aplican baselines de hardening (CIS Benchmarks o equivalente)?", weight: 2 },
+      { text: "¿Se aplican lineas base de hardening (referencias publicas o internas)?", weight: 2 },
       { text: "¿Están deshabilitadas las macros de Office en usuarios estándar?", weight: 2 },
       { text: "¿Existe control de aplicaciones (whitelisting) o restricción de ejecución?", weight: 2 },
       { text: "¿Los dispositivos móviles y BYOD tienen políticas de seguridad aplicadas (MDM)?", weight: 2 },
@@ -339,14 +340,14 @@ export const CONTROLS: Control[] = [
       low: [
         "Desplegar solución EDR en todos los endpoints (no solo antivirus tradicional)",
         "Deshabilitar macros de Office por política de grupo (GPO) para usuarios estándar",
-        "Aplicar CIS Benchmarks Level 1 en sistemas operativos de escritorio y servidores",
+        "Aplicar lineas base de endurecimiento en sistemas operativos de escritorio y servidores",
         "Eliminar software innecesario y deshabilitar servicios no requeridos",
       ],
       medium: [
         "Implementar Application Whitelisting (AppLocker, WDAC) en sistemas críticos",
         "Desplegar solución MDM para dispositivos móviles y BYOD",
         "Configurar Device Guard y Credential Guard en Windows",
-        "Implementar hardening específico para sistemas OT según ISA/IEC 62443",
+        "Implementar hardening especifico para sistemas OT segun buenas practicas del sector",
       ],
       high: [
         "Implementar XDR con correlación automática de amenazas",
@@ -365,13 +366,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "El ataque ocurre sin ser detectado durante semanas o meses.",
     mitre: ["T1071 - Application Layer Protocol", "T1041 - Exfiltration Over C2 Channel", "T1562 - Impair Defenses"],
     impact: ["Detección tardía", "Incidentes forenses incompletos", "Notificación regulatoria tardía"],
-    frameworks: {
-      "ISO 27001:2022": "A.8.15 Registro de eventos; A.8.16 Actividades de seguimiento; A.5.25 Evaluación de eventos de seguridad",
-      "NIST CSF 2.0": "DE.CM-1, DE.CM-6 (Continuous Monitoring); DE.AE-2, DE.AE-3 (Anomaly Detection)",
-      "NIST 800-53": "AU-6 Audit Log Review; SI-4 System Monitoring; IR-4 Incident Handling; AU-2 Event Logging",
-      "CIS v8.1": "Control 8: Gestión de Registros de Auditoría (8.1-8.12); Control 13: Monitoreo y Defensa de Red",
-      "ISA/IEC 62443": "SR 6.1 Audit log accessibility; SR 6.2 Continuous monitoring; SR 2.8 Auditable events",
-      "NERC CIP": "CIP-007-6 R4 Security Event Monitoring; CIP-008-6 Incident Reporting and Response Planning",
+    nistCsf: {
+      objective: "Deteccion",
+      functionCategory: "DE (Detect) / DE.AE (Adverse Event Analysis)",
+      subcategoryExample: "DE.AE-02 Analisis de eventos potencialmente adversos (SIEM)",
+      mappingWhy:
+        "Monitoreo y correlacion de eventos es la funcion Detect del CSF, categoria Adverse Event Analysis (DE.AE). DE.AE-02 describe analizar eventos potencialmente adversos, alineado a SIEM y monitoreo en tiempo real.",
     },
     questions: [
       { text: "¿Existe un SIEM o plataforma centralizada de correlación de logs?", weight: 3 },
@@ -410,13 +410,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Las credenciales robadas son suficientes para acceder.",
     mitre: ["T1078 - Valid Accounts", "T1556 - Modify Authentication Process", "T1110 - Brute Force"],
     impact: ["Acceso remoto no autorizado", "Compromiso de correo y VPN", "Ataques sin malware"],
-    frameworks: {
-      "ISO 27001:2022": "A.8.5 Autenticación segura; A.5.17 Información de autenticación; A.5.16 Gestión de identidad",
-      "NIST CSF 2.0": "PR.AA-3 (Multi-Factor Authentication); PR.AA-1 (Identity Management)",
-      "NIST 800-53": "IA-2(1)(2) MFA for Local/Network Access; IA-5 Authenticator Management",
-      "CIS v8.1": "Control 6.3 Require MFA for Externally-Exposed Apps; 6.4 MFA for Remote Access; 6.5 MFA for Admin Access",
-      "ISA/IEC 62443": "SR 1.1 Human user identification and authentication; SR 1.2 Software process and device identification",
-      "NERC CIP": "CIP-007-6 R5.1 Authentication for Interactive User Access; CIP-005-7 R2 Remote Access Management",
+    nistCsf: {
+      objective: "Autenticacion",
+      functionCategory: "PR (Protect) / PR.AA",
+      subcategoryExample: "PR.AA-03 Autenticacion de usuarios, servicios y hardware (MFA)",
+      mappingWhy:
+        "MFA refuerza la autenticacion de identidades; en CSF 2.0 pertenece a PR.AA. PR.AA-03 trata explicitamente autenticacion de usuarios, servicios y hardware, incluyendo factores multiples cuando aplica.",
     },
     questions: [
       { text: "¿Se utiliza MFA para acceso remoto (VPN, escritorio remoto)?", weight: 3 },
@@ -455,13 +454,12 @@ export const CONTROLS: Control[] = [
     riskIfMissing: "Reutilización de credenciales y contraseñas débiles.",
     mitre: ["T1555 - Credentials from Password Stores", "T1003 - OS Credential Dumping", "T1110 - Credential Stuffing"],
     impact: ["Compromisos en cadena", "Ataques cruzados entre servicios", "Escalamiento silencioso"],
-    frameworks: {
-      "ISO 27001:2022": "A.5.17 Información de autenticación; A.8.5 Autenticación segura; A.5.15 Control de acceso",
-      "NIST CSF 2.0": "PR.AA-1 (Identity Management); PR.AA-3 (Authentication)",
-      "NIST 800-53": "IA-5 Authenticator Management; IA-5(1) Password-Based Authentication; IA-4 Identifier Management",
-      "CIS v8.1": "Control 5.2 Use Unique Passwords; Control 5.3 Disable Dormant Accounts; Control 5.4 Restrict Admin Privileges",
-      "ISA/IEC 62443": "SR 1.5 Authenticator management; SR 1.7 Strength of password-based authentication",
-      "NERC CIP": "CIP-007-6 R5.2 Password Requirements; CIP-007-6 R5.3-R5.7 Authentication Controls",
+    nistCsf: {
+      objective: "Credenciales",
+      functionCategory: "PR (Protect) / PR.AA",
+      subcategoryExample: "PR.AA-01 Identidades y credenciales gestionadas por la organizacion",
+      mappingWhy:
+        "Gestor de contrasenas y politicas de secretos gestionan identidades y credenciales corporativas; encaja en PR.AA. PR.AA-01 describe identidades y credenciales emitidas y gestionadas por la organizacion.",
     },
     questions: [
       { text: "¿Se utiliza un gestor de contraseñas corporativo (1Password, Bitwarden, KeePass)?", weight: 3 },
@@ -495,18 +493,18 @@ export const CONTROLS: Control[] = [
 export const CONTEXT_RECOMMENDATIONS: Record<string, { label: string; general: string; priority: string }> = {
   ti: {
     label: "TI Corporativo",
-    general: "Los 9 básicos constituyen el núcleo mínimo de un SGSI auditable conforme a ISO 27001.",
-    priority: "Priorizar: Gestión de activos, MFA, Monitoreo y Respaldos como base del SGSI.",
+    general: "Los 9 basicos y el Control 0 se alinean a NIST CSF 2.0 como marco unico de referencia para priorizar mejoras.",
+    priority: "Priorizar: Gestion de activos, MFA, monitoreo y respaldos como base alineada a NIST CSF 2.0.",
   },
   ot: {
     label: "OT / ICS",
-    general: "En entornos OT, estos controles son el punto de partida para segmentación, control de accesos industriales y detección temprana según ISA/IEC 62443.",
-    priority: "Priorizar: Segmentación de redes TI-OT, Gestión de activos industriales, Parcheo con ventanas de mantenimiento.",
+    general: "En entornos OT, estos controles son el punto de partida para segmentacion, accesos industriales y deteccion temprana, interpretados con NIST CSF 2.0.",
+    priority: "Priorizar: Segmentacion TI-OT, inventario de activos industriales, parcheo con ventanas de mantenimiento.",
   },
   critica: {
-    label: "Infraestructura Crítica",
-    general: "Para infraestructura crítica, estos controles permiten avanzar desde cumplimiento formal (NERC CIP) hacia resiliencia operativa real. Ley 21.663 aplicable.",
-    priority: "Priorizar: Cumplimiento regulatorio NERC CIP, Segmentación, Monitoreo 24/7, Plan de recuperación probado.",
+    label: "Infraestructura Critica",
+    general: "Para infraestructura critica, el mapeo NIST CSF 2.0 apoya la mejora de ciberresiliencia. Ley 21.663 aplicable en Chile.",
+    priority: "Priorizar: Requisitos sectoriales, segmentacion, monitoreo 24/7 y plan de recuperacion probado.",
   },
 };
 

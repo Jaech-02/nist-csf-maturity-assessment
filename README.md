@@ -2,19 +2,15 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![Estado](https://img.shields.io/badge/Estado-Stable-brightgreen)]()
-[![OWASP](https://img.shields.io/badge/OWASP-Compliant-blue)]()
-[![Version](https://img.shields.io/badge/v2.1-2026--03--30-blue)]()
-[![Demo](https://img.shields.io/badge/Demo-Live-ff6b6b?logo=github)](https://ttpsecspa.github.io/ANCI/)
+[![Version](https://img.shields.io/badge/v2.2-2026--04--05-blue)]()
 
 # TTPSEC Asesor ANCI
 
 *Evaluador anónimo de madurez en ciberseguridad basado en los 9 Básicos de la ANCI + Control 0: Gestión de Activos*
 
-### [Ver Demo en Vivo](https://ttpsecspa.github.io/ANCI/)
-
-| Stack | Licencia | Estado | Versión | Demo |
-|-------|----------|--------|---------|------|
-| Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.1 | [ttpsecspa.github.io/ANCI](https://ttpsecspa.github.io/ANCI/) |
+| Stack | Licencia | Estado | Versión |
+|-------|----------|--------|---------|
+| Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.2 |
 
 ---
 
@@ -27,7 +23,8 @@
 - [Uso / Quick Start](#-uso--quick-start)
 - [Configuración](#-configuracion)
 - [Controles Evaluados](#-controles-evaluados)
-- [Marcos de Referencia](#-marcos-de-referencia)
+- [Marco de referencia](#marco-de-referencia)
+- [Por que encaja cada control en el NIST CSF 2.0](#por-que-encaja-cada-control-en-el-nist-csf-20)
 - [Seguridad](#-seguridad)
 - [Testing](#-testing)
 - [Contribución](#-contribucion)
@@ -41,7 +38,7 @@
 
 TTPSEC Asesor ANCI es una herramienta web de evaluación de madurez en ciberseguridad, alineada a los **9 Básicos de la Ciberseguridad** definidos por la Agencia Nacional de Ciberseguridad (ANCI) de Chile, más un **Control 0: Gestión de Activos** como base habilitante.
 
-Diseñada para organizaciones de cualquier tamaño y sector (TI, OT, Infraestructura Crítica), la herramienta genera recomendaciones mapeadas a marcos internacionales sin almacenar ni transmitir datos fuera del navegador del usuario.
+Diseñada para organizaciones de cualquier tamaño y sector (TI, OT, Infraestructura Crítica), la herramienta genera recomendaciones mapeadas a **NIST CSF 2.0** sin almacenar ni transmitir datos fuera del navegador del usuario.
 
 **Features principales:**
 
@@ -50,8 +47,8 @@ Diseñada para organizaciones de cualquier tamaño y sector (TI, OT, Infraestruc
 - 10 controles de seguridad con preguntas ponderadas
 - 3 contextos organizacionales: TI Corporativo, OT/ICS, Infraestructura Crítica
 - Recomendaciones por nivel de madurez (crítico, bajo, medio, alto)
-- Mapeo completo a ISO 27001, NIST CSF 2.0, NIST 800-53, CIS v8.1, ISA/IEC 62443, NERC CIP
-- Tabla de mapping interactiva con todos los marcos
+- Mapeo a **NIST CSF 2.0** (funcion/categoria y ejemplo de subcategoria por control)
+- Tabla de mapping interactiva ANCI → NIST CSF 2.0
 - Exportación de informe HTML y PDF (imprimir)
 
 ---
@@ -71,9 +68,9 @@ anci-advisor/
 │   │   ├── layout.tsx         # Metadata SEO, OpenGraph, estructura HTML
 │   │   └── page.tsx           # SPA principal (todas las pantallas)
 │   └── lib/
-│       ├── data.ts            # Controles, preguntas, frameworks, maturity levels
+│       ├── data.ts            # Controles, preguntas, mapeo NIST CSF 2.0, maturity levels
 │       └── version.ts         # Versión y fecha de la app
-├── next.config.ts             # Static export + basePath GitHub Pages
+├── next.config.ts             # Static export (sin basePath)
 ├── package.json
 └── tsconfig.json
 ```
@@ -89,7 +86,7 @@ anci-advisor/
                                           v
                                    ┌──────────────┐
                                    │   MAPPING    │
-                                   │  ISO/NIST/CIS│
+                                   │  NIST CSF 2.0│
                                    └──────────────┘
 ```
 
@@ -120,8 +117,9 @@ anci-advisor/
 | Variable | Descripción | Requerida | Default |
 |----------|-------------|-----------|---------|
 | `NODE_ENV` | Entorno de ejecución | No | `development` |
+| `NEXT_PUBLIC_SITE_URL` | URL publica del sitio (Open Graph / Twitter en build, sin barra final) | No | `http://localhost:3000` |
 
-> No se requieren API keys, tokens, ni servicios externos. Todo funciona localmente.
+> No se requieren API keys, tokens, ni servicios externos. Todo funciona localmente. La URL para compartir en redes se toma del navegador (`window.location`).
 
 ---
 
@@ -152,18 +150,9 @@ npm run build
 # Listos para servir con cualquier servidor estático
 ```
 
-### Deploy a GitHub Pages
-
-```bash
-# El proyecto usa static export con basePath "/ANCI"
-# Los archivos de ./out/ se copian a la rama gh-pages
-```
-
----
-
 ## Uso / Quick Start
 
-1. Abre [https://ttpsecspa.github.io/ANCI/](https://ttpsecspa.github.io/ANCI/)
+1. Ejecuta `npm run dev` y abre `http://localhost:3000`, o sirve la carpeta `out/` tras `npm run build` con cualquier hosting estatico.
 2. Selecciona tu **contexto organizacional**: TI Corporativo, OT/ICS, o Infraestructura Crítica
 3. Haz clic en **Comenzar Evaluación**
 4. Responde las preguntas de cada control (Si implementado / Parcialmente / No implementado)
@@ -171,7 +160,7 @@ npm run build
    - Score de madurez global (0-100%)
    - Score por control individual
    - Recomendaciones contextualizadas
-   - Mapeo a marcos internacionales
+   - Mapeo a NIST CSF 2.0
 6. Exporta tu informe como **HTML** o **PDF** (imprimir)
 
 ### Niveles de madurez
@@ -192,8 +181,6 @@ npm run build
 ```typescript
 const nextConfig: NextConfig = {
   output: "export",           // Static export (sin servidor)
-  basePath: "/ANCI",          // Ruta base para GitHub Pages
-  assetPrefix: "/ANCI/",     // Prefijo de assets
   images: {
     unoptimized: true,        // Requerido para static export
   },
@@ -203,8 +190,8 @@ const nextConfig: NextConfig = {
 ### `src/lib/version.ts`
 
 ```typescript
-export const APP_VERSION = "2.1";    // Incrementar en cada deploy
-export const APP_DATE = "2026-03-30"; // Fecha del último deploy
+export const APP_VERSION = "2.2";    // Incrementar en cada deploy
+export const APP_DATE = "2026-04-05"; // Fecha del último deploy
 export const APP_NAME = "TTPSEC Asesor ANCI";
 ```
 
@@ -227,20 +214,31 @@ export const APP_NAME = "TTPSEC Asesor ANCI";
 
 ---
 
-## Marcos de Referencia
+## Marco de referencia
 
-| Marco | Versión | Uso en la herramienta |
-|-------|---------|----------------------|
-| ISO/IEC 27001 | 2022 | Mapeo de controles A.x |
-| ISO/IEC 27002 | 2022 | Controles detallados |
-| ISO/IEC 27035 | 2023 | Gestión de incidentes |
-| NIST CSF | 2.0 (2024) | Funciones PR, DE, RC |
-| NIST 800-53 | Rev. 5 | Controles federales |
-| CIS Controls | v8.1 | Controles CIS 1-18 |
-| ISA/IEC 62443 | 2018-2023 | Seguridad industrial OT |
-| NERC CIP | 2023 | Regulación sector eléctrico |
-| SCF | 2024 | Capa de normalización |
-| MITRE ATT&CK | v15+ | Técnicas de ataque |
+- **[NIST Cybersecurity Framework (CSF) 2.0](https://www.nist.gov/cyberframework)** — unico marco usado para mapear cada control ANCI a categorías y subcategorías del núcleo oficial.
+- **MITRE ATT&CK** — referencia de técnicas de ataque asociadas a cada control (contexto educativo; no reemplaza al NIST en el informe de madurez).
+
+Lista de códigos por control: [docs/NIST_CSF_MAPPING.md](./docs/NIST_CSF_MAPPING.md).
+
+---
+
+## Por que encaja cada control en el NIST CSF 2.0
+
+El [NIST CSF 2.0](https://www.nist.gov/cyberframework) organiza **resultados** que debe lograr la organización; los básicos ANCI son prácticas que apoyan esos resultados. Cada fila es solo la **razón** del enlace.
+
+| Control | Categoría NIST (ejemplo) | Por qué |
+|---------|--------------------------|--------|
+| C0 Gestión de activos | ID.AM (p. ej. ID.AM-01) | El inventario y la gestión del ciclo de vida de activos son base de riesgo y protección; el CSF los ubica en **Identify**. |
+| C1 Actualizar periodicamente | ID.RA + PR.PS (p. ej. PR.PS-02) | Detectar fallos y versiones desactualizadas es riesgo sobre activos; parchear y mantener software es **protección de plataforma**. |
+| C2 Capacitar periodicamente | PR.AT (p. ej. PR.AT-01) | Formación y concienciación del personal tienen categoría propia en **Protect**. |
+| C3 Minimizar privilegios | PR.AA (p. ej. PR.AA-05) | Permisos, mínimo privilegio y separación de funciones están en **PR.AA** en la versión 2.0. |
+| C4 Respaldar información | PR.DS + RC.RP (p. ej. PR.DS-11, RC.RP-01) | Las copias protegen **datos**; los planes y la ejecución de recuperación son **Recover**. |
+| C5 Asegurar redes | PR.IR (p. ej. PR.IR-01) | Segmentación, perímetros y flujos de red se tratan como **resiliencia de infraestructura tecnológica**. |
+| C6 Asegurar equipos | PR.PS (p. ej. PR.PS-01, PR.PS-05) | Endpoints y servidores se gestionan como **plataforma** (configuración, integridad, software permitido). |
+| C7 Monitorear en tiempo real | DE.AE (p. ej. DE.AE-02) | Análisis y correlación de eventos (SIEM, alertas) son **análisis de eventos adversos** en **Detect**. |
+| C8 Uso de MFA | PR.AA (p. ej. PR.AA-03) | La autenticación reforzada entra en **PR.AA**. |
+| C9 Gestor de contraseñas | PR.AA (p. ej. PR.AA-01) | Emisión, gestión y revocación de credenciales corresponde a **identidades y credenciales gestionadas por la organización**. |
 
 ---
 
@@ -255,14 +253,6 @@ export const APP_NAME = "TTPSEC Asesor ANCI";
 - **No Dependencies externas en runtime**: no se cargan CDNs, fonts externas, ni APIs
 - **CSP Ready**: compatible con Content-Security-Policy restrictiva
 - **Referrer Policy**: `no-referrer` configurado en meta tags
-
-### OWASP / CWE / ASVS
-
-Consulta los documentos detallados:
-- [docs/OWASP_MAPPING.md](./docs/OWASP_MAPPING.md) — **OWASP Top 10:2025** mapping (A01-A10:2025)
-- [docs/CWE_MAPPING.md](./docs/CWE_MAPPING.md) — CWE mapping relevante al stack
-
-> **Nota:** El OWASP Top 10 es un documento de awareness (mínimo basal). Para un estándar verificable y testeable, consultar [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/).
 
 ### Reporte de vulnerabilidades
 
@@ -290,30 +280,30 @@ La verificación se realiza mediante:
 
 ## Contribución
 
-Consulta [CONTRIBUTING.md](./CONTRIBUTING.md) para las guías de contribución.
-
-**Resumen rápido:**
-1. Fork del repositorio
-2. Crea un branch (`git checkout -b feature/mi-feature`)
-3. Commit con Conventional Commits (`feat: descripción`)
-4. Push y Pull Request
+1. Fork y branch desde `main` (`git checkout -b feature/tu-cambio`)
+2. En `anci-advisor/`: `npm install` y `npm run build` debe pasar sin errores
+3. Commits con mensaje claro (puedes usar [Conventional Commits](https://www.conventionalcommits.org/) si quieres)
+4. Abre un Pull Request con descripcion breve del cambio
 
 ---
 
 ## Roadmap
 
-- [x] 10 controles con preguntas ponderadas
-- [x] 3 contextos organizacionales
-- [x] Exportación HTML y PDF
-- [x] Tabla de mapping interactiva
-- [x] Portada profesional dark hero
-- [x] Footer con versión y fecha
-- [x] Responsive mobile optimizado
-- [ ] Modo dark completo
+- [ ] Modo oscuro completo
 - [ ] Exportación a Excel/CSV
 - [ ] Comparativa entre evaluaciones (localStorage opcional)
 - [ ] Idioma inglés
-- [ ] PWA offline mode
+- [ ] PWA offline
+
+---
+
+## Procedencia y creditos
+
+Este repositorio **deriva del trabajo publicado** por TTPSECSPA en [**ttpsecspa/ANCI**](https://github.com/ttpsecspa/ANCI) (MIT). La linea de upstream y la URL del proyecto base estan en [LICENSE](./LICENSE).
+
+**Que permite la licencia MIT (resumen):** uso comercial y no comercial, modificacion, distribucion, sublicencia y uso privado, **sin garantia**. Puedes, por ejemplo, **cambiar el enfoque del producto** (como alinearlo a NIST CSF 2.0, ajustar textos o datos) siempre que **sigas incluyendo** el aviso de copyright y el texto de permisos MIT que exige la licencia (en la practica: mantener `LICENSE` coherente y los creditos del repo del que partiste).
+
+*Esto no es asesoria legal; si el caso es sensible, consulta con un abogado.*
 
 ---
 

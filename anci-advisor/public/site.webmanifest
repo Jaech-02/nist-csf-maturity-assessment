@@ -1,7 +1,7 @@
 {
   "name": "TTPSEC - Asesor ANCI 9 Básicos de Ciberseguridad",
   "short_name": "TTPSEC ANCI",
-  "description": "Evaluación anónima de ciberseguridad basada en los 9 Básicos de la ANCI Chile",
+  "description": "Evaluacion anonima: 9 Basicos ANCI + Control 0. Mapeo NIST CSF 2.0.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",

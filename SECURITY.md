@@ -51,7 +51,7 @@ Seguimos una política de **Coordinated Disclosure** con un plazo máximo de **9
 - Vulnerabilidades en dependencias upstream (reportar directamente al proyecto afectado)
 - Ataques que requieran acceso físico al dispositivo del usuario
 - Ingeniería social contra usuarios de la herramienta
-- Vulnerabilidades en GitHub Pages (reportar a GitHub)
+- Vulnerabilidades en el proveedor de hosting estatico (reportar al proveedor correspondiente)
 - Denegación de servicio contra el hosting estático
 
 ## Consideraciones de Arquitectura
