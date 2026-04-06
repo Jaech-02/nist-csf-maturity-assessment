@@ -1,0 +1,25 @@
+# Plantilla: edita los valores y sube el .yml al VPS (SCP/SFTP, etc.). No hace falta clonar
+# el repo en el servidor; docker compose solo necesita este archivo y la imagen en Docker Hub.
+# En desarrollo puedes copiar a docker-compose.yml local (ver .gitignore).
+#
+# Detras de jwilder/nginx-proxy: el proxy escucha 80/443 en el host; este servicio solo
+# expone el puerto 80 en la red Docker interna (no mapea puertos al host).
+
+services:
+  nist-csf-assessment:
+    image: YOUR_DOCKERHUB_USER/nist-csf-maturity-assessment:latest
+    container_name: nist-csf-assessment
+    restart: unless-stopped
+    expose:
+      - "80"
+    environment:
+      VIRTUAL_HOST: app.example.com
+      LETSENCRYPT_HOST: app.example.com
+      VIRTUAL_PORT: "80"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
+    name: replace_with_your_proxy_network

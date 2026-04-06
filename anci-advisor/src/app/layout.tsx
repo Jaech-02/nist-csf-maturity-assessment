@@ -16,6 +16,10 @@ function resolveMetadataBase(): URL {
   }
 }
 
+const openGraphUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim()
+  ? resolveMetadataBase().origin
+  : "https://nistcsf.uptlibre.pe";
+
 export const metadata: Metadata = {
   metadataBase: resolveMetadataBase(),
   title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
@@ -26,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
     description: "Evalua la madurez en ciberseguridad con los Basicos ANCI. 100% anonimo. Recomendaciones alineadas a NIST CSF 2.0.",
-    url: "https://www.ttpsec.ai",
+    url: openGraphUrl,
     siteName: "TTPSEC - Asesor ANCI",
     locale: "es_CL",
     type: "website",

@@ -14,8 +14,8 @@ Si descubres una vulnerabilidad de seguridad en este proyecto, por favor repórt
 
 ### Proceso
 
-1. **No abras un issue público.** Los reportes de seguridad deben ser privados.
-2. Envia un correo a: **security@ttpsec.ai**
+1. **No abras un issue público** con detalles que permitan explotar la vulnerabilidad.
+2. Usa el mecanismo privado que ofrezca tu plataforma (por ejemplo **GitHub → Security → Report a vulnerability** en el repositorio del fork) o un correo de contacto del mantenedor que **no** este publicado aqui si prefieres no exponerlo.
 3. Incluye en tu reporte:
    - Descripción de la vulnerabilidad
    - Pasos para reproducir

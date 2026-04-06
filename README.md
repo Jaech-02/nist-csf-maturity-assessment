@@ -2,7 +2,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![Estado](https://img.shields.io/badge/Estado-Stable-brightgreen)]()
-[![Version](https://img.shields.io/badge/v2.2-2026--04--05-blue)]()
+[![Version](https://img.shields.io/badge/v2.3-2026--04--08-blue)]()
 
 # TTPSEC Asesor ANCI
 
@@ -10,7 +10,7 @@
 
 | Stack | Licencia | Estado | Versión |
 |-------|----------|--------|---------|
-| Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.2 |
+| Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.3 |
 
 ---
 
@@ -27,6 +27,7 @@
 - [Por que encaja cada control en el NIST CSF 2.0](#por-que-encaja-cada-control-en-el-nist-csf-20)
 - [Seguridad](#-seguridad)
 - [Testing](#-testing)
+- [Despliegue Docker y VPS](#despliegue-docker-y-vps)
 - [Contribución](#-contribucion)
 - [Roadmap](#-roadmap)
 - [Licencia](#-licencia)
@@ -112,14 +113,9 @@ anci-advisor/
 
 **Sistemas operativos soportados:** Windows, macOS, Linux
 
-**Variables de entorno:**
+**Variables de entorno:** no se usan archivos `.env` en el despliegue. La URL publica (HTTPS) para metadatos Open Graph esta fijada en el `Dockerfile` (ARG) y en `.github/workflows/docker-publish.yml` (build-arg), ambos con el dominio de produccion. Para cambiar el dominio hay que editar esos archivos y volver a construir la imagen.
 
-| Variable | Descripción | Requerida | Default |
-|----------|-------------|-----------|---------|
-| `NODE_ENV` | Entorno de ejecución | No | `development` |
-| `NEXT_PUBLIC_SITE_URL` | URL publica del sitio (Open Graph / Twitter en build, sin barra final) | No | `http://localhost:3000` |
-
-> No se requieren API keys, tokens, ni servicios externos. Todo funciona localmente. La URL para compartir en redes se toma del navegador (`window.location`).
+> No se requieren API keys, tokens, ni servicios externos. Todo el procesamiento de la evaluacion ocurre en el navegador del usuario. La URL para compartir en redes se toma del navegador (`window.location`).
 
 ---
 
@@ -127,8 +123,8 @@ anci-advisor/
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/ttpsecspa/ANCI.git
-cd ANCI/anci-advisor
+git clone https://github.com/Jaech-02/nist-csf-maturity-assessment.git
+cd nist-csf-maturity-assessment/anci-advisor
 
 # 2. Instalar dependencias
 npm install
@@ -190,10 +186,45 @@ const nextConfig: NextConfig = {
 ### `src/lib/version.ts`
 
 ```typescript
-export const APP_VERSION = "2.2";    // Incrementar en cada deploy
-export const APP_DATE = "2026-04-05"; // Fecha del último deploy
+export const APP_VERSION = "2.3";    // Incrementar en cada deploy
+export const APP_DATE = "2026-04-06"; // Fecha del último deploy
 export const APP_NAME = "TTPSEC Asesor ANCI";
 ```
+
+---
+
+## Despliegue Docker y VPS
+
+Publicacion automatica con **GitHub Actions** (`.github/workflows/docker-publish.yml`): al hacer push a `main` en rutas bajo `anci-advisor/`, se construye la imagen (Next static export + nginx en puerto **80 interno**) y se publica en Docker Hub como **`<tu_usuario>/nist-csf-maturity-assessment`** con tags `latest` y `sha-<corto>` (el usuario debe ser el mismo que en el secret de abajo y el que pongas en `image` en el compose que uses en el VPS; puedes basarte en `deploy/docker-compose.example.yml`).
+
+**Secrets del repositorio** (Settings → Secrets and variables → Actions):
+
+| Secret | Valor |
+|--------|--------|
+| `DOCKERHUB_USERNAME` | Tu usuario de Docker Hub (mismo que en la linea `image` del compose de despliegue) |
+| `DOCKERHUB_TOKEN` | Token de acceso creado en Docker Hub (ver abajo). **No** pegues el token en el codigo ni en issues. |
+
+**Como obtener `DOCKERHUB_TOKEN` en Docker Hub:**
+
+1. Entra en [hub.docker.com](https://hub.docker.com) con tu cuenta.
+2. Arriba a la derecha: tu usuario → **Account Settings** (o **Personal settings**).
+3. Seccion **Security** → **New Access Token**.
+4. Nombre descriptivo (por ejemplo `github-actions-nist-csf`), permisos **Read, Write & Delete** (o al menos permiso de **push** a repositorios).
+5. **Generate** y copia el token de una sola vez (no se vuelve a mostrar completo).
+6. En GitHub: el mismo repositorio → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** → nombre `DOCKERHUB_TOKEN` → pegar el token.
+
+En el **VPS** no hace falta guardar el token para hacer `pull` de una imagen **publica** en Docker Hub. El token solo lo usa GitHub Actions para **subir** la imagen tras el build.
+
+El build de CI pasa `NEXT_PUBLIC_SITE_URL` al `Dockerfile` para que los metadatos Open Graph coincidan con el dominio publico, sin archivos `.env` en el servidor.
+
+1. Parte de la plantilla **`deploy/docker-compose.example.yml`** (en el repo) o de tu propio `docker-compose.yml` y edita **`image`**, **`VIRTUAL_HOST`** / **`LETSENCRYPT_HOST`** y **`networks.proxy.name`**. **No hace falta clonar el repositorio en el VPS**: basta con **subir solo ese archivo** (SCP, SFTP, panel, etc.) a una ruta del servidor, por ejemplo `/opt/nist-csf/docker-compose.yml`. El **example** se versiona; tu compose con datos reales puede quedar solo en el VPS.
+2. Asegura que el contenedor de esta app y el **reverse proxy** del host comparten la misma red Docker externa indicada en el compose (si hace falta, conecta el contenedor del proxy a esa red).
+3. En el servidor: la imagen ya esta en Docker Hub; solo descargala y levanta el stack, por ejemplo:  
+   `docker compose -f /opt/nist-csf/docker-compose.yml pull && docker compose -f /opt/nist-csf/docker-compose.yml up -d`  
+   (ajusta la ruta al sitio donde dejaste el `.yml`).
+4. DNS: registros A/AAAA de **`nistcsf.uptlibre.pe`** hacia la IP del VPS. El proxy usa las variables `VIRTUAL_HOST` y `LETSENCRYPT_HOST` del compose.
+
+**URL de produccion:** https://nistcsf.uptlibre.pe
 
 ---
 
@@ -299,7 +330,7 @@ La verificación se realiza mediante:
 
 ## Procedencia y creditos
 
-Este repositorio **deriva del trabajo publicado** por TTPSECSPA en [**ttpsecspa/ANCI**](https://github.com/ttpsecspa/ANCI) (MIT). La linea de upstream y la URL del proyecto base estan en [LICENSE](./LICENSE).
+Si este codigo **deriva de otro repositorio** publicado bajo MIT, manten los avisos de copyright y la procedencia en [LICENSE](./LICENSE) (incluido enlace al proyecto base si aplica).
 
 **Que permite la licencia MIT (resumen):** uso comercial y no comercial, modificacion, distribucion, sublicencia y uso privado, **sin garantia**. Puedes, por ejemplo, **cambiar el enfoque del producto** (como alinearlo a NIST CSF 2.0, ajustar textos o datos) siempre que **sigas incluyendo** el aviso de copyright y el texto de permisos MIT que exige la licencia (en la practica: mantener `LICENSE` coherente y los creditos del repo del que partiste).
 
@@ -317,10 +348,9 @@ Distribuido bajo la licencia **MIT**. Ver [LICENSE](./LICENSE) para más informa
 
 | Canal | Enlace |
 |-------|--------|
-| Web | [www.ttpsec.ai](https://www.ttpsec.ai) |
-| Web CL | [www.ttpsec.cl](https://www.ttpsec.cl) |
-| GitHub | [@ttpsecspa](https://github.com/ttpsecspa) |
-| LinkedIn | [TTPSEC](https://www.linkedin.com/company/ttpsec) |
+| Codigo e issues | [GitHub — Jaech-02/nist-csf-maturity-assessment](https://github.com/Jaech-02/nist-csf-maturity-assessment) |
+| Produccion (HTTPS) | https://nistcsf.uptlibre.pe |
+| Seguridad | Ver [SECURITY.md](./SECURITY.md) |
 
 ### Disclaimer
 
@@ -328,4 +358,4 @@ Distribuido bajo la licencia **MIT**. Ver [LICENSE](./LICENSE) para más informa
 
 ---
 
-*TTPSEC — Software para el bien común*
+*Proyecto de codigo abierto — revisa [LICENSE](./LICENSE) y [Procedencia](#procedencia-y-creditos).*

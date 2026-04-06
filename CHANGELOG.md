@@ -5,6 +5,21 @@ Todos los cambios notables del proyecto se documentan en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [2.3] - 2026-04-06
+
+### Added
+- `anci-advisor/Dockerfile`: build multi-stage (Node `npm run build` static export + `nginx:alpine` sirviendo `out/`)
+- `anci-advisor/nginx.conf` y `.dockerignore`
+- `.github/workflows/docker-publish.yml`: GitHub Actions publica en Docker Hub (`DOCKERHUB_USERNAME/nist-csf-maturity-assessment`, tags `latest` y `sha-*`); build-arg `NEXT_PUBLIC_SITE_URL` fijado en el workflow
+- `deploy/docker-compose.example.yml`: plantilla de despliegue detras de **jwilder/nginx-proxy**; `deploy/docker-compose.yml` ignorado en git (copia local desde el example)
+
+### Changed
+- `layout.tsx`: `openGraph.url` alineada a `NEXT_PUBLIC_SITE_URL` en build o dominio de produccion por defecto (`https://nistcsf.uptlibre.pe`)
+- `README` / `SECURITY.md`: despliegue sin `.env`; documentacion de despliegue con dominio e imagen Docker Hub concretos; reportes de seguridad genericos
+
+### Removed
+- `deploy/env.example` (despliegue directo, sin `.env` en VPS)
+
 ## [2.2] - 2026-04-05
 
 ### Added
