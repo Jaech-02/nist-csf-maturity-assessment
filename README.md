@@ -1,361 +1,194 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
-[![Estado](https://img.shields.io/badge/Estado-Stable-brightgreen)]()
-[![Version](https://img.shields.io/badge/v2.3-2026--04--08-blue)]()
+[![NIST CSF](https://img.shields.io/badge/NIST-CSF%202.0-1e40af)](https://www.nist.gov/cyberframework)
 
-# TTPSEC Asesor ANCI
+# Evaluador de madurez NIST CSF 2.0
 
-*Evaluador anónimo de madurez en ciberseguridad basado en los 9 Básicos de la ANCI + Control 0: Gestión de Activos*
+Aplicacion web estatica para **autoevaluacion de madurez** alineada al **Core del NIST Cybersecurity Framework (CSF) 2.0** ([NIST.CSWP.29](https://doi.org/10.6028/NIST.CSWP.29), febrero 2024). Incluye las **106 subcategorias oficiales** del Anexo A, agrupadas en **10 fases** de cuestionario (una pregunta por subcategoria).
 
-| Stack | Licencia | Estado | Versión |
-|-------|----------|--------|---------|
-| Next.js 16 + React 19 + Tailwind 4 | MIT | Stable | v2.3 |
+**Sitio de referencia** (proyecto base ANCI / TTPSEC): [https://ttpsecspa.github.io/ANCI/](https://ttpsecspa.github.io/ANCI/).  
+**Despliegue publico** (esta linea NIST CSF 2.0): [https://nistcsf.uptlibre.pe](https://nistcsf.uptlibre.pe) (en build Docker/CI: `NEXT_PUBLIC_SITE_URL`; fallback en `anci-advisor/src/lib/site.ts`).  
+**Repositorio:** [github.com/Jaech-02/nist-csf-maturity-assessment](https://github.com/Jaech-02/nist-csf-maturity-assessment) (la app Next.js esta en la carpeta `anci-advisor`).
 
 ---
 
-## Tabla de Contenidos
+## Tabla de contenidos
 
-- [Descripción](#-descripcion)
-- [Arquitectura](#-arquitectura)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación](#-instalacion)
-- [Uso / Quick Start](#-uso--quick-start)
-- [Configuración](#-configuracion)
-- [Controles Evaluados](#-controles-evaluados)
+- [Uso / Quick Start](#uso--quick-start)
+- [Flujo de la aplicacion](#flujo-de-la-aplicacion)
+- [Controles evaluados (10 fases)](#controles-evaluados-10-fases)
+- [Niveles de madurez](#niveles-de-madurez)
 - [Marco de referencia](#marco-de-referencia)
-- [Por que encaja cada control en el NIST CSF 2.0](#por-que-encaja-cada-control-en-el-nist-csf-20)
-- [Seguridad](#-seguridad)
-- [Testing](#-testing)
-- [Despliegue Docker y VPS](#despliegue-docker-y-vps)
-- [Contribución](#-contribucion)
-- [Roadmap](#-roadmap)
-- [Licencia](#-licencia)
-- [Contacto](#-contacto)
+- [Seguridad](#seguridad)
+- [Caracteristicas](#caracteristicas)
+- [Estructura del repositorio](#estructura-del-repositorio)
+- [Instalacion, build y fuente normativa](#instalacion-y-desarrollo)
 
 ---
-
-## Descripción
-
-TTPSEC Asesor ANCI es una herramienta web de evaluación de madurez en ciberseguridad, alineada a los **9 Básicos de la Ciberseguridad** definidos por la Agencia Nacional de Ciberseguridad (ANCI) de Chile, más un **Control 0: Gestión de Activos** como base habilitante.
-
-Diseñada para organizaciones de cualquier tamaño y sector (TI, OT, Infraestructura Crítica), la herramienta genera recomendaciones mapeadas a **NIST CSF 2.0** sin almacenar ni transmitir datos fuera del navegador del usuario.
-
-**Features principales:**
-
-- 100% anónimo: sin registro, sin cookies, sin analytics, sin tracking
-- Procesamiento 100% local en el navegador (client-side only)
-- 10 controles de seguridad con preguntas ponderadas
-- 3 contextos organizacionales: TI Corporativo, OT/ICS, Infraestructura Crítica
-- Recomendaciones por nivel de madurez (crítico, bajo, medio, alto)
-- Mapeo a **NIST CSF 2.0** (funcion/categoria y ejemplo de subcategoria por control)
-- Tabla de mapping interactiva ANCI → NIST CSF 2.0
-- Exportación de informe HTML y PDF (imprimir)
-
----
-
-## Arquitectura
-
-```
-anci-advisor/
-├── public/
-│   ├── logo-ttpsec.png        # Logo TTPSEC
-│   ├── og-image.svg           # Imagen para redes sociales (1200x630)
-│   ├── favicon.svg            # Icono del navegador
-│   └── site.webmanifest       # Manifest PWA
-├── src/
-│   ├── app/
-│   │   ├── globals.css        # Tailwind + animaciones + print styles
-│   │   ├── layout.tsx         # Metadata SEO, OpenGraph, estructura HTML
-│   │   └── page.tsx           # SPA principal (todas las pantallas)
-│   └── lib/
-│       ├── data.ts            # Controles, preguntas, mapeo NIST CSF 2.0, maturity levels
-│       └── version.ts         # Versión y fecha de la app
-├── next.config.ts             # Static export (sin basePath)
-├── package.json
-└── tsconfig.json
-```
-
-### Flujo de la aplicación
-
-```
-┌──────────┐     ┌───────────┐     ┌──────────────┐     ┌────────────┐
-│  INICIO  │────>│ CONTEXTO  │────>│  PREGUNTAS   │────>│ RESULTADOS │
-│  (Hero)  │     │ TI/OT/IC  │     │  C0..C9 (10) │     │  + Informe │
-└──────────┘     └───────────┘     └──────────────┘     └────────────┘
-                                          │
-                                          v
-                                   ┌──────────────┐
-                                   │   MAPPING    │
-                                   │  NIST CSF 2.0│
-                                   └──────────────┘
-```
-
-**Componentes clave:**
-
-| Componente | Archivo | Descripción |
-|------------|---------|-------------|
-| `Home` | `page.tsx` | Componente principal SPA con state management |
-| `QuestionScreen` | `page.tsx` | Pantalla de preguntas por control |
-| `Results` | `page.tsx` | Vista de resultados con score circular SVG |
-| `CONTROLS` | `data.ts` | Definición de 10 controles con preguntas y pesos |
-| `exportReport` | `page.tsx` | Generador de informe HTML descargable |
-
----
-
-## Requisitos Previos
-
-| Requisito | Versión Mínima | Notas |
-|-----------|---------------|-------|
-| Node.js | 18+ | Recomendado: 20 LTS o superior |
-| npm | 9+ | Incluido con Node.js |
-| Git | 2.0+ | Para clonar el repositorio |
-
-**Sistemas operativos soportados:** Windows, macOS, Linux
-
-**Variables de entorno:** no se usan archivos `.env` en el despliegue. La URL publica (HTTPS) para metadatos Open Graph esta fijada en el `Dockerfile` (ARG) y en `.github/workflows/docker-publish.yml` (build-arg), ambos con el dominio de produccion. Para cambiar el dominio hay que editar esos archivos y volver a construir la imagen.
-
-> No se requieren API keys, tokens, ni servicios externos. Todo el procesamiento de la evaluacion ocurre en el navegador del usuario. La URL para compartir en redes se toma del navegador (`window.location`).
-
----
-
-## Instalación
-
-```bash
-# 1. Clonar el repositorio
-git clone https://github.com/Jaech-02/nist-csf-maturity-assessment.git
-cd nist-csf-maturity-assessment/anci-advisor
-
-# 2. Instalar dependencias
-npm install
-
-# 3. Iniciar en modo desarrollo
-npm run dev
-
-# 4. Abrir en el navegador
-# http://localhost:3000
-```
-
-### Build de producción
-
-```bash
-# Generar static export
-npm run build
-
-# Los archivos quedan en ./out/
-# Listos para servir con cualquier servidor estático
-```
 
 ## Uso / Quick Start
 
-1. Ejecuta `npm run dev` y abre `http://localhost:3000`, o sirve la carpeta `out/` tras `npm run build` con cualquier hosting estatico.
-2. Selecciona tu **contexto organizacional**: TI Corporativo, OT/ICS, o Infraestructura Crítica
-3. Haz clic en **Comenzar Evaluación**
-4. Responde las preguntas de cada control (Si implementado / Parcialmente / No implementado)
-5. Al finalizar los 10 controles, obtendrás:
-   - Score de madurez global (0-100%)
-   - Score por control individual
-   - Recomendaciones contextualizadas
-   - Mapeo a NIST CSF 2.0
-6. Exporta tu informe como **HTML** o **PDF** (imprimir)
+1. Clona el repositorio y entra a la carpeta de la app:
+   ```bash
+   git clone https://github.com/Jaech-02/nist-csf-maturity-assessment.git
+   cd nist-csf-maturity-assessment/anci-advisor
+   npm install
+   ```
+2. Arranca en desarrollo: `npm run dev` → abre [http://localhost:3000](http://localhost:3000).
+3. Recorre las **10 fases**; en cada una responde **Si / Parcial / No** por cada subcategoria.
+4. En **Resultados** revisa el porcentaje global y por fase; descarga **informe HTML** o imprime a **PDF**.
 
-### Niveles de madurez
-
-| Nivel | Rango | Significado |
-|-------|-------|-------------|
-| Crítico | 0-25% | Exposición crítica. Acciones inmediatas requeridas |
-| Bajo | 26-50% | Brechas significativas. Priorizar controles base |
-| Medio | 51-75% | Fundamentos establecidos. Fortalecer implementación |
-| Alto | 76-100% | Madurez alta. Mantener y mejorar continuamente |
+Build estatico (produccion local): desde `anci-advisor`, `npm run build` → salida en `out/`.
 
 ---
 
-## Configuración
+## Flujo de la aplicacion
 
-### `next.config.ts`
-
-```typescript
-const nextConfig: NextConfig = {
-  output: "export",           // Static export (sin servidor)
-  images: {
-    unoptimized: true,        // Requerido para static export
-  },
-};
+```
+┌──────────┐     ┌─────────────────────┐     ┌────────────┐
+│  INICIO  │────>│ 10 FASES (106 preg.) │────>│ RESULTADOS │
+│  (Hero)  │     │  GV→ID→PR→DE→RS→RC   │     │ + informe  │
+└──────────┘     └─────────────────────┘     └────────────┘
+                          │
+                          v
+                 ┌─────────────────┐
+                 │  TABLA CORE     │
+                 │  106 subcats.   │
+                 └─────────────────┘
 ```
 
-### `src/lib/version.ts`
-
-```typescript
-export const APP_VERSION = "2.3";    // Incrementar en cada deploy
-export const APP_DATE = "2026-04-06"; // Fecha del último deploy
-export const APP_NAME = "TTPSEC Asesor ANCI";
-```
+- **Inicio:** presentacion, badges de privacidad, enlace a la tabla completa del Core (`Core CSF` en la navegacion cuando avanzas).
+- **Fases:** cada fase agrupa un subconjunto de subcategorias; la puntuacion de la fase es media ponderada de sus items.
+- **Resultados:** recomendaciones segun umbral de madurez; nota breve sobre contexto organizacional del Core (p. ej. GV.OC); detalle por subcategoria al expandir cada fase.
 
 ---
 
-## Despliegue Docker y VPS
+## Controles evaluados (10 fases)
 
-Publicacion automatica con **GitHub Actions** (`.github/workflows/docker-publish.yml`): al hacer push a `main` en rutas bajo `anci-advisor/`, se construye la imagen (Next static export + nginx en puerto **80 interno**) y se publica en Docker Hub como **`<tu_usuario>/nist-csf-maturity-assessment`** con tags `latest` y `sha-<corto>` (el usuario debe ser el mismo que en el secret de abajo y el que pongas en `image` en el compose que uses en el VPS; puedes basarte en `deploy/docker-compose.example.yml`).
+Cada fila es una **fase** del cuestionario; el numero entre parentesis es la cantidad de **subcategorias** NIST en esa fase.
 
-**Secrets del repositorio** (Settings → Secrets and variables → Actions):
+| Fase | Titulo | Alcance (resumen) |
+|------|--------|-------------------|
+| 1 | Gobernanza: contexto y estrategia de riesgo | GV.OC y GV.RM (12) |
+| 2 | Gobernanza: roles, politica y supervision | GV.RR, GV.PO y GV.OV (9) |
+| 3 | Gobernanza: cadena de suministro | GV.SC (10) |
+| 4 | Identificar: activos y mejora | ID.AM e ID.IM (11) |
+| 5 | Identificar: evaluacion de riesgos | ID.RA (10) |
+| 6 | Proteger: identidad, datos y concientizacion | PR.AA, PR.AT y PR.DS (12) |
+| 7 | Proteger: plataformas e infraestructura | PR.PS y PR.IR (10) |
+| 8 | Detectar: monitoreo y analisis | DE.CM y DE.AE (11) |
+| 9 | Responder: gestion y mitigacion de incidentes | RS.MA, RS.AN, RS.CO y RS.MI (13) |
+| 10 | Recuperar: ejecucion y comunicacion | RC.RP y RC.CO (8) |
 
-| Secret | Valor |
-|--------|--------|
-| `DOCKERHUB_USERNAME` | Tu usuario de Docker Hub (mismo que en la linea `image` del compose de despliegue) |
-| `DOCKERHUB_TOKEN` | Token de acceso creado en Docker Hub (ver abajo). **No** pegues el token en el codigo ni en issues. |
+**Total:** 106 subcategorias (IDs como `GV.OC-01`, `ID.AM-07`, etc.). La numeracion con huecos es la del estandar NIST.
 
-**Como obtener `DOCKERHUB_TOKEN` en Docker Hub:**
-
-1. Entra en [hub.docker.com](https://hub.docker.com) con tu cuenta.
-2. Arriba a la derecha: tu usuario → **Account Settings** (o **Personal settings**).
-3. Seccion **Security** → **New Access Token**.
-4. Nombre descriptivo (por ejemplo `github-actions-nist-csf`), permisos **Read, Write & Delete** (o al menos permiso de **push** a repositorios).
-5. **Generate** y copia el token de una sola vez (no se vuelve a mostrar completo).
-6. En GitHub: el mismo repositorio → **Settings** → **Secrets and variables** → **Actions** → **New repository secret** → nombre `DOCKERHUB_TOKEN` → pegar el token.
-
-En el **VPS** no hace falta guardar el token para hacer `pull` de una imagen **publica** en Docker Hub. El token solo lo usa GitHub Actions para **subir** la imagen tras el build.
-
-El build de CI pasa `NEXT_PUBLIC_SITE_URL` al `Dockerfile` para que los metadatos Open Graph coincidan con el dominio publico, sin archivos `.env` en el servidor.
-
-1. Parte de la plantilla **`deploy/docker-compose.example.yml`** (en el repo) o de tu propio `docker-compose.yml` y edita **`image`**, **`VIRTUAL_HOST`** / **`LETSENCRYPT_HOST`** y **`networks.proxy.name`**. **No hace falta clonar el repositorio en el VPS**: basta con **subir solo ese archivo** (SCP, SFTP, panel, etc.) a una ruta del servidor, por ejemplo `/opt/nist-csf/docker-compose.yml`. El **example** se versiona; tu compose con datos reales puede quedar solo en el VPS.
-2. Asegura que el contenedor de esta app y el **reverse proxy** del host comparten la misma red Docker externa indicada en el compose (si hace falta, conecta el contenedor del proxy a esa red).
-3. En el servidor: la imagen ya esta en Docker Hub; solo descargala y levanta el stack, por ejemplo:  
-   `docker compose -f /opt/nist-csf/docker-compose.yml pull && docker compose -f /opt/nist-csf/docker-compose.yml up -d`  
-   (ajusta la ruta al sitio donde dejaste el `.yml`).
-4. DNS: registros A/AAAA de **`nistcsf.uptlibre.pe`** hacia la IP del VPS. El proxy usa las variables `VIRTUAL_HOST` y `LETSENCRYPT_HOST` del compose.
-
-**URL de produccion:** https://nistcsf.uptlibre.pe
+**Base metodologica (10 controles C0–C9) y alineacion a NIST CSF 2.0, mas puente a las fases de la app:** [docs/NIST_CSF_MAPPING.md](./docs/NIST_CSF_MAPPING.md)
 
 ---
 
-## Controles Evaluados
+## Niveles de madurez
 
-| # | Control | Objetivo | MITRE ATT&CK |
-|---|---------|----------|--------------|
-| C0 | Gestión de Activos | Inventario y gobierno de activos | T1595, T1590 |
-| C1 | Actualizar Periódicamente | Gestión de vulnerabilidades | T1190, T1068, T1210 |
-| C2 | Capacitar Periódicamente | Reducción del riesgo humano | T1566, T1204 |
-| C3 | Minimizar Privilegios | Control de accesos | T1078, T1068, T1055 |
-| C4 | Respaldar Información | Continuidad operativa | T1486, T1490, T1485 |
-| C5 | Asegurar Redes | Protección de comunicaciones | T1021, T1046, T1018 |
-| C6 | Asegurar Equipos | Protección de activos | T1059, T1547, T1053 |
-| C7 | Monitorear en Tiempo Real | Detección temprana | T1071, T1041, T1562 |
-| C8 | Uso de MFA | Autenticación robusta | T1078, T1556, T1110 |
-| C9 | Gestor de Contraseñas | Gestión de credenciales | T1555, T1003, T1110 |
+La app calcula un **porcentaje por fase** (0–100) y un **promedio global**. Cada porcentaje se clasifica asi:
+
+| Rango % | Etiqueta | Significado operativo |
+|---------|----------|------------------------|
+| 0 – 25 | Critico | Acciones inmediatas en las subcategorias peor puntuadas. |
+| 26 – 50 | Bajo | Brechas amplias frente al resultado esperado del Core en esa fase. |
+| 51 – 75 | Medio | Base instalada; falta estandarizar y documentar evidencia. |
+| 76 – 100 | Alto | Mantener, auditar y alinear con perfiles y Tiers CSF. |
+
+Las **recomendaciones** mostradas (bajo/medio/alto de accion) dependen del tramo de puntuacion de cada fase (en codigo: critico/bajo usa tramo `low`, etc.).
 
 ---
 
 ## Marco de referencia
 
-- **[NIST Cybersecurity Framework (CSF) 2.0](https://www.nist.gov/cyberframework)** — unico marco usado para mapear cada control ANCI a categorías y subcategorías del núcleo oficial.
-- **MITRE ATT&CK** — referencia de técnicas de ataque asociadas a cada control (contexto educativo; no reemplaza al NIST en el informe de madurez).
+| Marco | Version | Uso en la herramienta |
+|-------|---------|------------------------|
+| **NIST Cybersecurity Framework (CSF)** | **2.0** (NIST.CSWP.29, 2024) | Unico marco: **Core** (6 funciones, categorias y **106 subcategorias** del Anexo A). |
 
-Lista de códigos por control: [docs/NIST_CSF_MAPPING.md](./docs/NIST_CSF_MAPPING.md).
-
----
-
-## Por que encaja cada control en el NIST CSF 2.0
-
-El [NIST CSF 2.0](https://www.nist.gov/cyberframework) organiza **resultados** que debe lograr la organización; los básicos ANCI son prácticas que apoyan esos resultados. Cada fila es solo la **razón** del enlace.
-
-| Control | Categoría NIST (ejemplo) | Por qué |
-|---------|--------------------------|--------|
-| C0 Gestión de activos | ID.AM (p. ej. ID.AM-01) | El inventario y la gestión del ciclo de vida de activos son base de riesgo y protección; el CSF los ubica en **Identify**. |
-| C1 Actualizar periodicamente | ID.RA + PR.PS (p. ej. PR.PS-02) | Detectar fallos y versiones desactualizadas es riesgo sobre activos; parchear y mantener software es **protección de plataforma**. |
-| C2 Capacitar periodicamente | PR.AT (p. ej. PR.AT-01) | Formación y concienciación del personal tienen categoría propia en **Protect**. |
-| C3 Minimizar privilegios | PR.AA (p. ej. PR.AA-05) | Permisos, mínimo privilegio y separación de funciones están en **PR.AA** en la versión 2.0. |
-| C4 Respaldar información | PR.DS + RC.RP (p. ej. PR.DS-11, RC.RP-01) | Las copias protegen **datos**; los planes y la ejecución de recuperación son **Recover**. |
-| C5 Asegurar redes | PR.IR (p. ej. PR.IR-01) | Segmentación, perímetros y flujos de red se tratan como **resiliencia de infraestructura tecnológica**. |
-| C6 Asegurar equipos | PR.PS (p. ej. PR.PS-01, PR.PS-05) | Endpoints y servidores se gestionan como **plataforma** (configuración, integridad, software permitido). |
-| C7 Monitorear en tiempo real | DE.AE (p. ej. DE.AE-02) | Análisis y correlación de eventos (SIEM, alertas) son **análisis de eventos adversos** en **Detect**. |
-| C8 Uso de MFA | PR.AA (p. ej. PR.AA-03) | La autenticación reforzada entra en **PR.AA**. |
-| C9 Gestor de contraseñas | PR.AA (p. ej. PR.AA-01) | Emisión, gestión y revocación de credenciales corresponde a **identidades y credenciales gestionadas por la organización**. |
+No se integran otros marcos (ISO 27001, CIS, etc.) en esta version del producto.
 
 ---
 
 ## Seguridad
 
-### Modelo de seguridad
-
-- **Zero Data Collection**: ningún dato sale del navegador del usuario
-- **No Backend**: la aplicación es 100% client-side (static export)
-- **No Cookies**: no se usan cookies, localStorage, ni sessionStorage
-- **No Analytics**: no hay scripts de tracking, GA, ni pixel
-- **No Dependencies externas en runtime**: no se cargan CDNs, fonts externas, ni APIs
-- **CSP Ready**: compatible con Content-Security-Policy restrictiva
-- **Referrer Policy**: `no-referrer` configurado en meta tags
-
-### Reporte de vulnerabilidades
-
-Consulta [SECURITY.md](./SECURITY.md) para el proceso de reporte de vulnerabilidades.
+- **Sin backend:** export estatico (`output: "export"`); la logica corre en el navegador.
+- **Sin recoleccion de datos:** no hay envio de respuestas a servidor; no hay cookies ni analitica en la app.
+- **CSP-friendly:** sin dependencias externas en runtime cargadas por CDN.
+- **Referrer:** `no-referrer` en metadata (ver `layout.tsx`).
+- **Alcance:** herramienta educativa; **no** sustituye auditoria formal ni afiliacion con NIST.
 
 ---
 
-## Testing
+## Caracteristicas
 
-```bash
-# Verificar build de producción
-npm run build
+- 106 subcategorias Core con **outcome** oficial (EN) y pregunta operativa (ES) en codigo sin acentos.
+- Tabla **Core completo** en la UI con todas las filas del catalogo.
+- Export **HTML** del informe y **impresion a PDF** desde el navegador.
+- Version y fecha del producto en `src/lib/version.ts` (actual **2.4**; historial en `CHANGELOG.md`).
 
-# Verificar que el export estático funciona
-npx serve out/
+---
+
+## Estructura del repositorio
+
+```
+anci-advisor/                 # app Next.js (export estatico)
+├── src/
+│   ├── app/                  # UI (page.tsx, layout.tsx)
+│   └── lib/
+│       ├── csf-catalog.ts    # 106 items + metadatos de fases
+│       ├── data.ts           # fases, niveles de madurez, VD/VI auxiliares
+│       ├── site.ts           # URL publica y prefijo de assets (env en build Docker)
+│       └── version.ts
+├── Dockerfile
+├── next.config.ts
+└── public/
 ```
 
-La verificación se realiza mediante:
-- Build de producción exitoso
-- Preview visual en navegador
-- Validación de funcionalidad de botones (exportar, imprimir, nueva evaluación)
-- Verificación responsive (mobile/tablet/desktop)
-
 ---
 
-## Contribución
+## Instalacion y desarrollo
 
-1. Fork y branch desde `main` (`git checkout -b feature/tu-cambio`)
-2. En `anci-advisor/`: `npm install` y `npm run build` debe pasar sin errores
-3. Commits con mensaje claro (puedes usar [Conventional Commits](https://www.conventionalcommits.org/) si quieres)
-4. Abre un Pull Request con descripcion breve del cambio
+**Requisitos:** Node.js 20+ (recomendado), npm.
 
----
+```bash
+git clone https://github.com/Jaech-02/nist-csf-maturity-assessment.git
+cd nist-csf-maturity-assessment/anci-advisor
+npm install
+npm run dev
+```
 
-## Roadmap
+Abre [http://localhost:3000](http://localhost:3000).
 
-- [ ] Modo oscuro completo
-- [ ] Exportación a Excel/CSV
-- [ ] Comparativa entre evaluaciones (localStorage opcional)
-- [ ] Idioma inglés
-- [ ] PWA offline
+### Build estatico y Docker
 
----
+```bash
+cd anci-advisor
+npm run build
+```
 
-## Procedencia y creditos
+Salida en `anci-advisor/out/`. Para imagen nginx + publicacion en Docker Hub, ver `anci-advisor/Dockerfile` y `.github/workflows/docker-publish.yml`. La URL publica en metadatos y compartir se define con `NEXT_PUBLIC_SITE_URL` en ese build (ver `src/lib/site.ts`).
 
-Si este codigo **deriva de otro repositorio** publicado bajo MIT, manten los avisos de copyright y la procedencia en [LICENSE](./LICENSE) (incluido enlace al proyecto base si aplica).
+### Fuente normativa
 
-**Que permite la licencia MIT (resumen):** uso comercial y no comercial, modificacion, distribucion, sublicencia y uso privado, **sin garantia**. Puedes, por ejemplo, **cambiar el enfoque del producto** (como alinearlo a NIST CSF 2.0, ajustar textos o datos) siempre que **sigas incluyendo** el aviso de copyright y el texto de permisos MIT que exige la licencia (en la practica: mantener `LICENSE` coherente y los creditos del repo del que partiste).
+- National Institute of Standards and Technology (2024). *The NIST Cybersecurity Framework (CSF) 2.0.* NIST CSWP 29. [https://doi.org/10.6028/NIST.CSWP.29](https://doi.org/10.6028/NIST.CSWP.29)
 
-*Esto no es asesoria legal; si el caso es sensible, consulta con un abogado.*
+La numeracion de subcategorias **no es consecutiva** (huecos propios del estandar).
+
+### Catalogo CSF en codigo
+
+Las **106 subcategorias** y metadatos de fases viven en `anci-advisor/src/lib/csf-catalog.ts` (y la logica de preguntas en `data.ts`). Si cambias criterios, actualiza esos archivos y la tabla en `docs/NIST_CSF_MAPPING.md`.
 
 ---
 
 ## Licencia
 
-Distribuido bajo la licencia **MIT**. Ver [LICENSE](./LICENSE) para más información.
+MIT — ver [LICENSE](./LICENSE).
 
 ---
 
 ## Contacto
 
-| Canal | Enlace |
-|-------|--------|
-| Codigo e issues | [GitHub — Jaech-02/nist-csf-maturity-assessment](https://github.com/Jaech-02/nist-csf-maturity-assessment) |
-| Produccion (HTTPS) | https://nistcsf.uptlibre.pe |
-| Seguridad | Ver [SECURITY.md](./SECURITY.md) |
-
-### Disclaimer
-
-> **Plataforma académica y educativa.** Este sitio no está afiliado, asociado ni respaldado por ningún ente gubernamental, la ANCI, ni el Gobierno de Chile. No reemplaza una auditoría formal de ciberseguridad ni constituye asesoría legal.
-
----
-
-*Proyecto de codigo abierto — revisa [LICENSE](./LICENSE) y [Procedencia](#procedencia-y-creditos).*
+[uptlibre](https://www.uptlibre.pe) — herramienta con fines educativos; no sustituye auditoria formal.  
+Sitio de referencia del fork: [Asesor ANCI (TTPSEC)](https://ttpsecspa.github.io/ANCI/).

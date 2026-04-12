@@ -1,54 +1,41 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ASSET_BASE_PATH, PUBLIC_SITE_URL } from "@/lib/site";
 
-const METADATA_BASE_FALLBACK = "http://localhost:3000";
+const SITE = PUBLIC_SITE_URL.replace(/\/$/, "");
 
-function resolveMetadataBase(): URL {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (!raw) {
-    return new URL(`${METADATA_BASE_FALLBACK}/`);
-  }
-  const origin = raw.replace(/\/$/, "");
-  try {
-    return new URL(`${origin}/`);
-  } catch {
-    return new URL(`${METADATA_BASE_FALLBACK}/`);
-  }
-}
-
-const openGraphUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-  ? resolveMetadataBase().origin
-  : "https://nistcsf.uptlibre.pe";
+/** Raster para OG/Twitter: muchas redes ignoran SVG en og:image. */
+const OG_IMAGE_PATH = `${ASSET_BASE_PATH}/logo_uptlibre.png`.replace(/\/{2,}/g, "/") || "/logo_uptlibre.png";
 
 export const metadata: Metadata = {
-  metadataBase: resolveMetadataBase(),
-  title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
-  description: "Evaluacion anonima basada en los 9 Basicos de la ANCI y Control 0. Sin registro ni tracking. Mapeo y recomendaciones alineadas a NIST CSF 2.0.",
+  metadataBase: new URL(`${SITE}/`),
+  title: "uptlibre | Asesor NIST CSF 2.0 - Madurez en ciberseguridad",
+  description: "Evaluacion anonima de madurez basada en el NIST Cybersecurity Framework (CSF) 2.0. Sin registro, sin cookies, sin tracking. 100% local en el navegador.",
   robots: "index, follow",
-  authors: [{ name: "TTPSEC", url: "https://www.ttpsec.ai" }],
-  keywords: ["ciberseguridad", "ANCI", "9 basicos", "NIST CSF 2.0", "NIST Cybersecurity Framework", "evaluacion", "Chile", "TTPSEC", "madurez"],
+  authors: [{ name: "uptlibre", url: PUBLIC_SITE_URL }],
+  keywords: ["ciberseguridad", "NIST CSF", "NIST CSF 2.0", "madurez", "evaluacion", "uptlibre", "seguridad informatica", "infraestructura critica"],
   openGraph: {
-    title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
-    description: "Evalua la madurez en ciberseguridad con los Basicos ANCI. 100% anonimo. Recomendaciones alineadas a NIST CSF 2.0.",
-    url: openGraphUrl,
-    siteName: "TTPSEC - Asesor ANCI",
-    locale: "es_CL",
+    title: "uptlibre | Asesor NIST CSF 2.0",
+    description: "Evalua madurez con el Core del NIST CSF 2.0. Anonimo, sin registro, sin datos en servidor.",
+    url: SITE,
+    siteName: "uptlibre — NIST CSF 2.0",
+    locale: "es",
     type: "website",
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "TTPSEC - Asesor de Ciberseguridad ANCI Chile",
+        url: OG_IMAGE_PATH,
+        width: 1684,
+        height: 495,
+        type: "image/png",
+        alt: "uptlibre — Asesor NIST CSF 2.0",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "TTPSEC | Asesor ANCI - 9 Básicos de Ciberseguridad",
-    description: "Evalua tu ciberseguridad con los 9 Basicos de la ANCI. Anonimo y local. Marco de referencia: NIST CSF 2.0.",
-    images: ["/og-image.png"],
-    creator: "@ttpsec",
+    title: "uptlibre | Asesor NIST CSF 2.0",
+    description: "Evalua madurez con NIST CSF 2.0. Anonimo y local en tu navegador.",
+    images: [OG_IMAGE_PATH],
   },
   icons: {
     icon: [
@@ -65,11 +52,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="es" dir="ltr">
       <head>
         <meta name="referrer" content="no-referrer" />
-        <meta name="theme-color" content="#1e40af" />
+        <meta name="theme-color" content="#f87171" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="license" href="https://github.com/ttpsecspa/ANCI/blob/main/LICENSE" />
+        <link rel="license" href="https://github.com/Jaech-02/nist-csf-maturity-assessment/blob/main/LICENSE" />
       </head>
-      <body className="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col">
+      <body className="bg-zinc-50 text-zinc-900 antialiased min-h-screen flex flex-col">
         {children}
       </body>
     </html>

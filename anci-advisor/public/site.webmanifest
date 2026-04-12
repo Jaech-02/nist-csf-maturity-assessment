@@ -1,11 +1,11 @@
 {
-  "name": "TTPSEC - Asesor ANCI 9 Básicos de Ciberseguridad",
-  "short_name": "TTPSEC ANCI",
+  "name": "uptlibre — Asesor NIST CSF 2.0",
+  "short_name": "uptlibre CSF",
   "description": "Evaluacion anonima: 9 Basicos ANCI + Control 0. Mapeo NIST CSF 2.0.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#1e40af",
+  "theme_color": "#b91c1c",
   "lang": "es",
   "icons": [
     {

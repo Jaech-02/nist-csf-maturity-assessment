@@ -20,8 +20,8 @@
     <path d="M60 10 C60 10 110 30 110 70 L110 100 C110 140 60 160 60 160 C60 160 10 140 10 100 L10 70 C10 30 60 10 60 10Z" fill="url(#shield)" opacity="0.9"/>
     <path d="M40 90 L55 105 L80 75" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
   </g>
-  <text x="600" y="300" text-anchor="middle" font-family="system-ui,sans-serif" font-size="72" font-weight="900" fill="white" letter-spacing="6">TTPSEC</text>
-  <text x="600" y="360" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="600" fill="#93c5fd">Asesor ANCI | 9 Basicos de Ciberseguridad</text>
+  <text x="600" y="300" text-anchor="middle" font-family="system-ui,sans-serif" font-size="72" font-weight="900" fill="white" letter-spacing="4">uptlibre</text>
+  <text x="600" y="360" text-anchor="middle" font-family="system-ui,sans-serif" font-size="28" font-weight="600" fill="#93c5fd">Asesor NIST CSF 2.0 | Madurez</text>
   <text x="600" y="420" text-anchor="middle" font-family="system-ui,sans-serif" font-size="20" fill="#cbd5e1">Evaluacion anonima de madurez en ciberseguridad</text>
   <rect x="100" y="470" width="1000" height="50" rx="10" fill="rgba(255,255,255,0.08)"/>
   <text x="600" y="502" text-anchor="middle" font-family="monospace" font-size="14" fill="#94a3b8" letter-spacing="2">NIST Cybersecurity Framework (CSF) 2.0</text>
@@ -32,6 +32,6 @@
   <rect x="580" y="540" width="120" height="30" rx="15" fill="rgba(167,139,250,0.2)" stroke="rgba(167,139,250,0.4)" stroke-width="1"/>
   <text x="640" y="560" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#c4b5fd">SIN RASTREO</text>
   <rect x="720" y="540" width="130" height="30" rx="15" fill="rgba(251,191,36,0.2)" stroke="rgba(251,191,36,0.4)" stroke-width="1"/>
-  <text x="785" y="560" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#fcd34d">www.ttpsec.ai</text>
+  <text x="785" y="560" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="#fcd34d">www.uptlibre.pe</text>
   <rect x="0" y="620" width="1200" height="10" fill="rgba(96,165,250,0.5)"/>
 </svg>

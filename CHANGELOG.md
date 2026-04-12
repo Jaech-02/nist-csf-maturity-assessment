@@ -5,6 +5,45 @@ Todos los cambios notables del proyecto se documentan en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [2.4] - 2026-04-12
+
+### Added
+- `anci-advisor/src/lib/site.ts`: URL publica (`NEXT_PUBLIC_SITE_URL`) y prefijo de assets opcional (`NEXT_PUBLIC_BASE_PATH`) en tiempo de build; fallback **https://nistcsf.uptlibre.pe** para desarrollo local; constante **UPTLIBRE_PORTAL_URL** (**https://www.uptlibre.pe**) para el portal del grupo de investigacion.
+- `anci-advisor/src/lib/nist-links.ts`: `NIST_CSF_INFORMATIVE_REFERENCES_URL` hacia [CSF 2.0 Informative References](https://www.nist.gov/cyberframework/informative-references) (referencia declarada para el texto de orientacion: seccion *Download CSF 2.0 Informative Reference in the Core*).
+- `anci-advisor/src/lib/governance-record.ts` y formulario **Registro de gobierno** en inicio: institucion, alcance, responsable, tipo de medicion, referencia a politica/plan, notas; persistencia en `localStorage`; resumen en resultados e inclusion en informe HTML si hay datos; boton **Eliminar registro** (`clearGovernanceRecord`) con confirmacion.
+- `anci-advisor/src/lib/answers-session.ts`: persistencia de **respuestas del cuestionario** en `localStorage` entre recargas (F5); solo se limpian con **Nueva evaluacion** (no al recargar la pagina).
+- Modal de orientacion en resultados (`page.tsx`): aviso de que la referencia es ese material NIST; enlace al dominio anterior; modal con clase `no-print` para no tapar la impresion.
+- Enlaces **UPTLIBRE** al portal del grupo: cabecera (debajo del titulo del producto), navegacion en vistas distintas de Inicio (junto a **Nueva evaluacion** y **Core CSF**), pie de pagina (bloque con Grupo de Investigacion "Libertad y Pensamiento", Facultad de Ingenieria — UPT) y boton flotante inferior derecha (`no-print`). En la barra de **Inicio** no se muestran UPTLIBRE ni Nueva evaluacion en la fila compacta del nav.
+- Impresion / PDF desde resultados: listeners `beforeprint` / `afterprint` y `matchMedia("print")` para expandir todas las tarjetas de control; `flushSync` para actualizar el DOM antes del dialogo de impresion; texto **Pregunta** por subcategoria; recomendaciones del catalogo en bloque solo impresion cuando aplica; clase `print-card-header` para mantener visibles los titulos de tarjeta pese a ocultar botones; `globals.css` sin `* { break-inside: avoid }` global y reglas `.results-detail-scroll` / `.print-question-block`.
+- `data.ts`: `answersMapEqual`, `overallBlockAveragePercentFromAnswers` (madurez global como promedio de los diez bloques, alineado con Resultados e informe HTML).
+- Dependencia de desarrollo `@types/react-dom` (import de `flushSync` desde `react-dom`).
+- `globals.css`: cursor `pointer` en `button:not(:disabled)` y `label`; `not-allowed` en `button:disabled`.
+
+### Changed
+- Marca **uptlibre**, evaluador **NIST CSF 2.0**: enlaces y textos publicos alineados al dominio **nistcsf.uptlibre.pe** (compartir en redes, OG/metadata, pie de pagina, informe HTML exportado); codigo en **github.com/Jaech-02/nist-csf-maturity-assessment**; app en carpeta **anci-advisor**. (El release inicial **1.0** del 2026-03-29 y el refocus NIST en **2.2** siguen documentados mas abajo; las entradas **[1.0]/[1.1]** de abril 2026 que duplicaban eso fueron retiradas.)
+- `layout.tsx`: **Open Graph** y **Twitter Card** usan **`logo_uptlibre.png`** (PNG) en lugar de `og-image.svg`; muchas redes (Facebook, LinkedIn, WhatsApp, etc.) no muestran **SVG** en `og:image`. Ruta de imagen respecto a `ASSET_BASE_PATH`; dimensiones declaradas 1684×495; `metadataBase` sin barra final duplicada en la URL del sitio.
+- `Dockerfile` y `.github/workflows/docker-publish.yml`: `NEXT_PUBLIC_SITE_URL` como build-arg para la imagen de produccion.
+- README y `docs/NIST_CSF_MAPPING.md`: sitio, rutas de codigo y estructura del repo actualizados.
+- `tsconfig.json`: alias `@/*` sin `baseUrl` ni `ignoreDeprecations` (compatibilidad TypeScript 6).
+- Numeracion de producto **2.4** en `src/lib/version.ts` y `package.json`.
+- Resultados (`page.tsx`): orientacion del catalogo (ejemplos) como recomendacion solo si la respuesta es **No** o **Parcial**; boton **Ver recomendacion** abre el modal; misma logica en informe HTML exportado.
+- Resultados: la orientacion por subcategoria ya no se expande en la lista en pantalla; se abre en un panel modal (hoja inferior en movil, dialogo centrado en escritorio; Escape, clic fuera o *Cerrar*). Bloqueo de scroll del documento mientras el modal esta abierto.
+- Informe HTML exportado: orientacion del catalogo dentro de `<details>` colapsable por subcategoria para reducir longitud visual del archivo; bloque de registro de gobierno cuando corresponde.
+- Identidad visible: lema **Libertad y Pensamiento** sustituye a la frase anterior "Software para el bien comun" (pie y bloque de resultados).
+- **Nueva evaluacion**: boton movido del pie de Resultados a la **barra de navegacion** (solo cuando no esta en Inicio); reinicia respuestas, tarjetas abiertas y vuelve al inicio.
+- **Seguimiento** (`snapshots.ts`): metrica global usa `overallBlockAveragePercentFromAnswers` para coincidir con Resultados (antes un agregado ponderado podia diferir en un punto porcentual).
+- Pantalla **Seguimiento**: estado de la sesion actual (coincide con ultimo guardado / cambios sin guardar / sin historial) segun `answersMapEqual` con la ultima medicion; texto de ayuda del registro de gobierno menciona impresion y PDF.
+
+### Fixed
+- Vista previa social: imagen Open Graph y Twitter visibles al usar **PNG** publico en lugar de SVG.
+
+### Removed
+- Seccion de inicio **Apoyo al Core NIST** / **Como el Core se reparte en las preguntas** y componente `CoreFacetsInQuestionnaireTable` (tabla tecnica de facetas del Core en el cuestionario); nota al pie de la pantalla **Core CSF** actualizada para no citar esa tabla.
+- Entradas de changelog duplicadas **[1.0]** / **[1.1]** (abril 2026) que repetian o contradecian la linea **2.x** y la **1.x** historica; su contenido util queda resumido arriba.
+- Enlaces a **LinkedIn** en compartir (se mantienen X, Facebook y WhatsApp donde apliquen).
+- Import de `COVERAGE_DIMENSIONS_META` en `page.tsx` al retirar la tabla de facetas (el objeto permanece en `data.ts` por si se reutiliza).
+- Funcion previa `overallPercentFromAnswers` en `data.ts` (sustituida por el promedio por bloques para coherencia de UI).
+
 ## [2.3] - 2026-04-06
 
 ### Added
@@ -140,5 +179,5 @@ y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Mapeo a 8 marcos internacionales
 - Exportación de informe HTML
 - Diseño responsive con Tailwind CSS
-- Static export para hosting estatico
+- Static export para GitHub Pages
 - Zero data collection: sin cookies, sin tracking, sin backend

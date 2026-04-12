@@ -1,48 +1,65 @@
 @import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
-/* ─── Hero Animations ─── */
+@theme {
+  --color-brand-red: #dc2626;
+  --color-brand-red-soft: #fecaca;
+  --color-brand-cream: #fafafa;
+}
+
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(59,130,246,0.3), 0 0 60px rgba(99,102,241,0.1); }
-  50% { box-shadow: 0 0 30px rgba(59,130,246,0.5), 0 0 80px rgba(99,102,241,0.2); }
+@keyframes pulse-glow-soft {
+  0%, 100% { box-shadow: 0 4px 20px rgba(220, 38, 38, 0.12); }
+  50% { box-shadow: 0 6px 28px rgba(220, 38, 38, 0.18); }
 }
-@keyframes float {
+@keyframes float-subtle {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50% { transform: translateY(-4px); }
 }
-@keyframes shimmer {
+@keyframes shimmer-bar {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
 
-.animate-fade-in-up { animation: fade-in-up 0.7s ease-out both; }
-.animate-fade-in-up-d1 { animation: fade-in-up 0.7s ease-out 0.1s both; }
-.animate-fade-in-up-d2 { animation: fade-in-up 0.7s ease-out 0.2s both; }
-.animate-fade-in-up-d3 { animation: fade-in-up 0.7s ease-out 0.3s both; }
-.animate-fade-in-up-d4 { animation: fade-in-up 0.7s ease-out 0.4s both; }
-.animate-fade-in-up-d5 { animation: fade-in-up 0.7s ease-out 0.5s both; }
-.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
-.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-fade-in-up { animation: fade-in-up 0.65s ease-out both; }
+.animate-fade-in-up-d1 { animation: fade-in-up 0.65s ease-out 0.08s both; }
+.animate-fade-in-up-d2 { animation: fade-in-up 0.65s ease-out 0.16s both; }
+.animate-fade-in-up-d3 { animation: fade-in-up 0.65s ease-out 0.24s both; }
+.animate-fade-in-up-d4 { animation: fade-in-up 0.65s ease-out 0.32s both; }
+.animate-fade-in-up-d5 { animation: fade-in-up 0.65s ease-out 0.4s both; }
+.animate-pulse-glow { animation: pulse-glow-soft 4s ease-in-out infinite; }
+.animate-float { animation: float-subtle 5s ease-in-out infinite; }
 .animate-shimmer {
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(252, 165, 165, 0.45) 50%, transparent 100%);
   background-size: 200% 100%;
-  animation: shimmer 3s linear infinite;
+  animation: shimmer-bar 4s linear infinite;
 }
 
 .hero-grid-pattern {
   background-image:
-    linear-gradient(rgba(59,130,246,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59,130,246,0.06) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(rgba(220, 38, 38, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120, 113, 108, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
+/* Badges sobre hero claro */
 .glass {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(252, 165, 165, 0.5);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+button:not(:disabled),
+label {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
 
 @media print {
@@ -65,16 +82,35 @@
     display: block !important;
   }
 
-  * {
+  /* Listas largas: permitir saltos de pagina (evitar * { break-inside: avoid } que recorta contenido). */
+  .results-detail-scroll {
+    max-height: none !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .print-question-block {
     break-inside: avoid;
+    page-break-inside: avoid;
   }
 
   button {
     display: none !important;
   }
 
+  /* Encabezado de tarjeta de resultados (toggle): debe verse en PDF */
+  button.print-card-header {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    background: #fff !important;
+    color: #000 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   a {
-    color: #1e40af !important;
+    color: #b91c1c !important;
     text-decoration: underline !important;
   }
 }
