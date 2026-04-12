@@ -5,7 +5,7 @@ import { ASSET_BASE_PATH, PUBLIC_SITE_URL } from "@/lib/site";
 const SITE = PUBLIC_SITE_URL.replace(/\/$/, "");
 
 /** Raster para OG/Twitter: muchas redes ignoran SVG en og:image. */
-const OG_IMAGE_PATH = `${ASSET_BASE_PATH}/open-graph.png`.replace(/\/{2,}/g, "/") || "/open-graph.png";
+const OG_IMAGE_PATH = `${ASSET_BASE_PATH}/open-graph-imagen.png`.replace(/\/{2,}/g, "/") || "/open-graph-imagen.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL(`${SITE}/`),
