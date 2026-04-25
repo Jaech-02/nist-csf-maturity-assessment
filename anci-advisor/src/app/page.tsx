@@ -1326,13 +1326,13 @@ function Results({
     : 0;
   let selectedReading = "Sin datos suficientes para interpretar este control.";
   if (selectedAveragePercent >= 80) {
-    selectedReading = "Desempeno alto del control, con base solida de implementacion.";
+    selectedReading = "Desempeño alto del control, con base solida de implementacion.";
   } else if (selectedAveragePercent >= 60) {
-    selectedReading = "Desempeno medio, hay avance pero aun existen brechas.";
+    selectedReading = "Desempeño medio, hay avance pero aun existen brechas.";
   } else if (selectedAveragePercent >= 40) {
-    selectedReading = "Desempeno bajo, se recomienda priorizar plan de mejora.";
+    selectedReading = "Desempeño bajo, se recomienda priorizar plan de mejora.";
   } else {
-    selectedReading = "Desempeno critico, requiere acciones inmediatas en este control.";
+    selectedReading = "Desempeño critico, requiere acciones inmediatas en este control.";
   }
 
   return (

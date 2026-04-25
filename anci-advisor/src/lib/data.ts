@@ -66,7 +66,7 @@ export const BASE_CONTROL_NAMES: Record<string, string> = {
   C6: "Asegurar Equipos",
   C7: "Monitorear en Tiempo Real",
   C8: "Uso de MFA",
-  C9: "Gestor de Contrasenas",
+  C9: "Gestor de Contraseñas",
 };
 
 /** Texto claro para el usuario en cada bloque. */

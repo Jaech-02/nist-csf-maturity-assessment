@@ -40,7 +40,7 @@ Si cambias criterios de mapeo, actualiza esta tabla y revisa `anci-advisor/src/l
 | C6 | Asegurar Equipos | Endpoints / plataforma | PR / PR.PS | PR.PS-01; PR.PS-05 | Endpoints, EDR y endurecimiento son seguridad de plataforma (PR.PS): configuracion segura y control de lo que se ejecuta. PR.PS-01 y PR.PS-05 cubren gestion de configuracion y bloqueo de software no autorizado. |
 | C7 | Monitorear en Tiempo Real | Deteccion | DE / DE.AE | DE.AE-02 | Monitoreo y correlacion de eventos es la funcion Detect del CSF, categoria Adverse Event Analysis (DE.AE). DE.AE-02 describe analizar eventos potencialmente adversos, alineado a SIEM y monitoreo en tiempo real. |
 | C8 | Uso de MFA | Autenticacion | PR / PR.AA | PR.AA-03 | MFA refuerza la autenticacion de identidades; en CSF 2.0 pertenece a PR.AA. PR.AA-03 trata explicitamente autenticacion de usuarios, servicios y hardware, incluyendo factores multiples cuando aplica. |
-| C9 | Gestor de Contrasenas | Credenciales | PR / PR.AA | PR.AA-01 | Gestor de contrasenas y politicas de secretos gestionan identidades y credenciales corporativas; encaja en PR.AA. PR.AA-01 describe identidades y credenciales emitidas y gestionadas por la organizacion. |
+| C9 | Gestor de Contraseñas | Credenciales | PR / PR.AA | PR.AA-01 | Gestor de contraseñas y politicas de secretos gestionan identidades y credenciales corporativas; encaja en PR.AA. PR.AA-01 describe identidades y credenciales emitidas y gestionadas por la organizacion. |
 
 La evaluacion en la app usa **solo NIST CSF 2.0** como marco normativo de referencia (no ISO/CIS/800-53 en esta version).
 
