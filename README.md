@@ -18,6 +18,7 @@ Aplicacion web estatica para **autoevaluacion de madurez** alineada al **Core de
 - [Flujo de la aplicacion](#flujo-de-la-aplicacion)
 - [Controles evaluados (10 fases)](#controles-evaluados-10-fases)
 - [Niveles de madurez](#niveles-de-madurez)
+- [Calculo descriptivo en resultados](#calculo-descriptivo-en-resultados)
 - [Marco de referencia](#marco-de-referencia)
 - [Seguridad](#seguridad)
 - [Caracteristicas](#caracteristicas)
@@ -98,6 +99,24 @@ La app calcula un **porcentaje por fase** (0–100) y un **promedio global**. Ca
 | 76 – 100 | Alto | Mantener, auditar y alinear con perfiles y Tiers CSF. |
 
 Las **recomendaciones** mostradas (bajo/medio/alto de accion) dependen del tramo de puntuacion de cada fase (en codigo: critico/bajo usa tramo `low`, etc.).
+
+---
+
+## Calculo descriptivo en resultados
+
+En la pantalla de **Resultados**, por cada control (C0-C9), la app calcula indicadores descriptivos a partir de sus preguntas:
+
+- **Codificacion por respuesta:** `Si = 2`, `Parcial = 1`, `No = 0`.  
+  `Sin respuesta` no suma puntaje.
+- **Promedio (0 a 2):**  
+  `Promedio = (2*Si + 1*Parcial + 0*No) / totalPreguntasDelControl`
+- **Promedio (%):**  
+  `Promedio% = (Promedio / 2) * 100`
+- **Estado dominante:** categoria con mayor frecuencia entre `Si`, `Parcial`, `No`, `Sin respuesta`.
+- **Riesgo visible (%):**  
+  `Riesgo% = ((No + SinRespuesta) / totalPreguntasDelControl) * 100`
+
+Estos calculos son descriptivos para seguimiento operativo del control; no reemplazan una auditoria formal.
 
 ---
 

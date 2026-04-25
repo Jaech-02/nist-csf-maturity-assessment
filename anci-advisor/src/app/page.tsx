@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
+import * as XLSX from "xlsx";
 import {
   BASE_CONTROL_NAMES,
   CONTROLS,
@@ -46,11 +47,6 @@ const REPO_URL = "https://github.com/Jaech-02/nist-csf-maturity-assessment";
 import { APP_VERSION, APP_DATE } from "@/lib/version";
 
 type Answers = Record<string, Record<number, number>>;
-
-/** Orientacion del catalogo solo como recomendacion si hay brecha (No o Parcial). */
-function showImplementationGuidance(answer: number | undefined): boolean {
-  return answer === 0 || answer === 1;
-}
 
 /** Las tres dimensiones del sistema (variable independiente) segun el marco de investigacion. */
 function InstrumentResearchDimensionsSection() {
@@ -472,6 +468,12 @@ h1{color:#7f1d1d;border-bottom:3px solid #b91c1c;padding-bottom:.5rem}h2{color:#
 .fw{background:#f5f5f4;border-radius:4px;padding:.5rem;margin:.25rem 0;font-size:.82rem}.fw strong{color:#991b1b}
 .badge{display:inline-block;padding:.2rem .6rem;border-radius:12px;font-size:.75rem;font-weight:600}
 .b-critical{background:#fee2e2;color:#dc2626}.b-low{background:#fef3c7;color:#d97706}.b-medium{background:#cffafe;color:#0891b2}.b-high{background:#d1fae5;color:#059669}
+.bars{display:flex;align-items:flex-end;gap:10px;height:120px;margin:.6rem 0 .35rem 0;padding:.5rem;border:1px solid #e7e5e4;border-radius:10px;background:#fff}
+.bar-item{flex:1;min-width:0;height:100%;text-align:center;display:flex;flex-direction:column;justify-content:flex-end}
+.bar-col{display:block;width:100%;border-radius:8px 8px 0 0;min-height:4px}
+.bar-done{background:#10b981}.bar-partial{background:#f59e0b}.bar-no{background:#ef4444}.bar-empty{background:#9ca3af}
+.bar-label{font-size:.68rem;color:#57534e;margin-top:.25rem}
+.kpi{display:inline-block;margin-right:.45rem;margin-bottom:.25rem;padding:.18rem .5rem;border-radius:8px;border:1px solid #e7e5e4;background:#fff;font-size:.74rem}
 .disclaimer{margin-top:3rem;padding:1rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;font-size:.78rem;color:#64748b}
 </style></head><body>`;
     html += `<h1>Informe de evaluacion de ciberseguridad</h1>`;
@@ -505,28 +507,47 @@ h1{color:#7f1d1d;border-bottom:3px solid #b91c1c;padding-bottom:.5rem}h2{color:#
       html += `<p style="font-size:.82rem;color:#64748b">${s.control.description}</p>`;
       html += `<p style="font-size:.78rem;color:#57534e;margin-top:.35rem"><strong>Catalogo marco de 10:</strong> ${BASE_CONTROL_NAMES[s.control.baseControlCode] ?? s.control.baseControlCode}</p>`;
       html += `<p style="font-size:.78rem;color:#57534e;margin:.25rem 0 0 0">${s.control.baseControlNote}</p>`;
-      html += `<h4 style="margin-top:.75rem;font-size:.82rem;color:#b91c1c">Subcategorias: respuesta y recomendaciones</h4>`;
+      html += `<h4 style="margin-top:.75rem;font-size:.82rem;color:#b91c1c">Subcategorias: respuesta</h4>`;
+      const stats = s.control.questions.reduce(
+        (acc, _q, qi) => {
+          const val = ans[qi];
+          if (val === 2) acc.done += 1;
+          else if (val === 1) acc.partial += 1;
+          else if (val === 0) acc.notDone += 1;
+          else acc.empty += 1;
+          return acc;
+        },
+        { done: 0, partial: 0, notDone: 0, empty: 0 },
+      );
+      const total = s.control.questions.length || 1;
+      const wDone = (stats.done / total) * 100;
+      const wPartial = (stats.partial / total) * 100;
+      const wNo = (stats.notDone / total) * 100;
+      const wEmpty = (stats.empty / total) * 100;
+      html += `<div><strong style="font-size:.78rem;color:#444">Grafico de barras del control:</strong>`;
+      html += `<div class="bars">`;
+      html += `<div class="bar-item"><div class="bar-col bar-done" style="height:${stats.done > 0 ? Math.max(wDone, 4) : 0}%"></div><div class="bar-label">Si</div></div>`;
+      html += `<div class="bar-item"><div class="bar-col bar-partial" style="height:${stats.partial > 0 ? Math.max(wPartial, 4) : 0}%"></div><div class="bar-label">Parcial</div></div>`;
+      html += `<div class="bar-item"><div class="bar-col bar-no" style="height:${stats.notDone > 0 ? Math.max(wNo, 4) : 0}%"></div><div class="bar-label">No</div></div>`;
+      html += `<div class="bar-item"><div class="bar-col bar-empty" style="height:${stats.empty > 0 ? Math.max(wEmpty, 4) : 0}%"></div><div class="bar-label">Sin resp.</div></div>`;
+      html += `</div>`;
+      html += `<span class="kpi">Si: <strong>${stats.done}</strong></span><span class="kpi">Parcial: <strong>${stats.partial}</strong></span><span class="kpi">No: <strong>${stats.notDone}</strong></span><span class="kpi">Sin respuesta: <strong>${stats.empty}</strong></span></div>`;
       s.control.questions.forEach((q, qi) => {
         const v = ans[qi];
         const label = v === undefined ? "sin respuesta" : v === 2 ? "implementado" : v === 1 ? "parcial" : "no";
         const preguntaEs = escHtml(questionPlainBody(q.text, q.subcategoryId));
         html += `<div class="fw"><strong>${q.subcategoryId}</strong> (${escHtml(q.categoryEs)})<br><span style="font-size:.78rem;line-height:1.35;display:block;margin:.25rem 0;color:#444"><strong>Pregunta:</strong> ${preguntaEs}</span><span style="font-size:.78rem">Respuesta: <strong>${label}</strong></span>`;
-        const ex = q.implementationExamplesEs;
-        if (ex?.length && showImplementationGuidance(v)) {
-          html += `<details style="margin-top:.35rem;border-radius:6px;border:1px solid #a7f3d0;background:#ecfdf5;overflow:hidden"><summary style="cursor:pointer;padding:.4rem .55rem;font-size:.74rem;font-weight:700;color:#14532d;list-style:none">Recomendacion del catalogo (${ex.length} lineas) </summary><ul style="margin:0;padding:.35rem .55rem .55rem 1.25rem;font-size:.74rem;color:#365314;line-height:1.35;border-top:1px solid #a7f3d0">`;
-          ex.forEach((line) => {
-            html += `<li>${escHtml(line)}</li>`;
-          });
-          html += `</ul></details>`;
-        }
         html += `</div>`;
       });
       html += `<div class="fw" style="margin-top:.5rem"><strong>Funcion dominante:</strong> ${s.control.csf.function} — ${s.control.csf.category}</div></div>`;
     });
 
-    html += `<div class="disclaimer"><strong>PLATAFORMA ACADEMICA Y EDUCATIVA - uptlibre</strong><br>
-No afiliada ni respaldada por NIST. El CSF es marco voluntario.
-No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}">${PUBLIC_SITE.replace("https://", "")}</a></strong> — Ningun dato salio de su navegador.
+    html += `<div class="disclaimer"><strong>Asesor de Ciberseguridad - uptlibre</strong><br>
+Esta herramienta es una herramienta de evaluación de madurez en ciberseguridad basada en el NIST Cybersecurity Framework (CSF) 2.0.
+Su propósito es estimar el nivel de madurez organizacional frente a los resultados esperados (Outcomes) del Core del NIST CSF 2.0, identificando brechas, prioridades y oportunidades de mejora.
+No sustituye la documentación oficial del NIST ni una auditoría formal, ni constituye asesoramiento legal o regulatorio. El NIST CSF se utiliza como marco de referencia internacionalmente reconocido y validado por expertos, tras el análisis comparativo de diversos marcos y normas (ISO, buenas prácticas y modelos de riesgo).
+La herramienta está diseñada para auto‑diagnóstico, gestión del riesgo y mejora continua, y puede apoyar procesos de gobernanza, ERM y toma de decisiones estratégicas.
+<br><br>Para corregir brechas por subcategoria use el archivo Excel exportado (Checklist), donde cada recomendacion queda en filas separadas para seguimiento.
 <br><br>Herramienta v${APP_VERSION} (${APP_DATE}).
 <br><br><a href="${REPO_URL}">Codigo fuente (GitHub)</a> — Licencia MIT</div></body></html>`;
 
@@ -537,6 +558,125 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
     a.download = `Informe_NIST_CSF_nistcsf_${new Date().toISOString().slice(0, 10)}.html`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const exportExcel = () => {
+    const workbook = XLSX.utils.book_new();
+    CONTROLS.forEach((control) => {
+      const ans = answers[control.id] || {};
+      const rows: Array<{
+        Control: string;
+        Categoria: string;
+        Subcategoria: string;
+        Pregunta: string;
+        Respuesta: string;
+        Recomendaciones: string;
+        Checklist: string;
+      }> = [];
+      const merges: XLSX.Range[] = [];
+      control.questions.forEach((q, qi) => {
+        const v = ans[qi];
+        const response = v === undefined ? "Sin respuesta" : v === 2 ? "Si implementado" : v === 1 ? "Parcialmente" : "No implementado";
+        const shouldRecommend = v !== 2;
+        const recommendations = shouldRecommend ? (q.implementationExamplesEs ?? []) : [];
+        const rowStart = rows.length;
+        const baseData = {
+          Control: `${control.baseControlCode} - ${control.name}`,
+          Categoria: q.categoryEs,
+          Subcategoria: q.subcategoryId,
+          Pregunta: questionPlainBody(q.text, q.subcategoryId),
+          Respuesta: response,
+        };
+        if (recommendations.length > 0) {
+          recommendations.forEach((line) => {
+            rows.push({
+              ...baseData,
+              Recomendaciones: line,
+              Checklist: "",
+            });
+          });
+        } else {
+          rows.push({
+            ...baseData,
+            Recomendaciones: shouldRecommend ? "Sin recomendacion catalogada" : "No aplica",
+            Checklist: shouldRecommend ? "" : "x",
+          });
+        }
+        const rowEnd = rows.length - 1;
+        if (rowEnd > rowStart) {
+          // Une columnas base para no repetir visualmente cuando hay varias recomendaciones.
+          for (let col = 0; col <= 4; col += 1) {
+            merges.push({
+              s: { r: rowStart + 1, c: col },
+              e: { r: rowEnd + 1, c: col },
+            });
+          }
+        }
+      });
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      worksheet["!merges"] = merges;
+      worksheet["!cols"] = [
+        { wch: 34 }, // Control
+        { wch: 28 }, // Categoria
+        { wch: 16 }, // Subcategoria
+        { wch: 72 }, // Pregunta
+        { wch: 20 }, // Respuesta
+        { wch: 62 }, // Recomendaciones
+        { wch: 12 }, // Checklist
+      ];
+      worksheet["!autofilter"] = { ref: "A1:G1" };
+      worksheet["!freeze"] = { xSplit: 0, ySplit: 1, topLeftCell: "A2", activePane: "bottomLeft", state: "frozen" } as never;
+      const sheetName = control.baseControlCode;
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+    });
+    XLSX.writeFile(workbook, `Checklist_NIST_CSF_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  const exportQuestionnaireExcel = () => {
+    const workbook = XLSX.utils.book_new();
+    CONTROLS.forEach((control) => {
+      const rows: Array<{
+        Control: string;
+        Categoria: string;
+        Subcategoria: string;
+        Pregunta: string;
+        Checklist: string;
+      }> = [];
+      const merges: XLSX.Range[] = [];
+      control.questions.forEach((q) => {
+        const rowStart = rows.length;
+        rows.push({
+          Control: `${control.baseControlCode} - ${control.name}`,
+          Categoria: q.categoryEs,
+          Subcategoria: q.subcategoryId,
+          Pregunta: questionPlainBody(q.text, q.subcategoryId),
+          Checklist: "",
+        });
+        const rowEnd = rows.length - 1;
+        if (rowEnd > rowStart) {
+          for (let col = 0; col <= 3; col += 1) {
+            merges.push({
+              s: { r: rowStart + 1, c: col },
+              e: { r: rowEnd + 1, c: col },
+            });
+          }
+        }
+      });
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      worksheet["!merges"] = merges;
+      worksheet["!cols"] = [
+        { wch: 34 }, // Control
+        { wch: 28 }, // Categoria
+        { wch: 16 }, // Subcategoria
+        { wch: 90 }, // Pregunta
+        { wch: 14 }, // Checklist
+      ];
+      worksheet["!autofilter"] = { ref: "A1:E1" };
+      worksheet["!freeze"] = { xSplit: 0, ySplit: 1, topLeftCell: "A2", activePane: "bottomLeft", state: "frozen" } as never;
+      const sheetName = control.baseControlCode;
+      XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+    });
+    XLSX.writeFile(workbook, `Cuestionario_NIST_CSF_${new Date().toISOString().slice(0, 10)}.xlsx`);
   };
 
   // ─── RENDER ───
@@ -825,6 +965,8 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                 openCards={openCards}
                 toggleCard={toggleCard}
                 onExport={exportReport}
+                onExportExcel={exportExcel}
+                onExportQuestionnaireExcel={exportQuestionnaireExcel}
                 onHistorial={() => goTo(SCREEN_HISTORIAL)}
                 governanceRecord={govRecord}
               />
@@ -964,11 +1106,6 @@ function QuestionScreen({
             </h2>
             <p className="mt-1 text-xs font-medium text-zinc-500 leading-snug">{control.name}</p>
             <p className="mt-3 text-sm leading-relaxed text-zinc-800">{control.plainIntro}</p>
-            {(control.id === "p1" || control.id === "p2" || control.id === "p3" || control.id === "p5") && (
-              <p className="mt-2 text-[12px] leading-snug text-zinc-600">
-                Este bloque concentra <strong>gobernanza (GV)</strong> y/o <strong>evaluacion de riesgos (ID.RA)</strong>, pilares centrales del Core para dirigir y priorizar el riesgo.
-              </p>
-            )}
           </div>
         </div>
 
@@ -1084,7 +1221,7 @@ function QuestionScreen({
 
 // ─── RESULTS COMPONENT ───
 function Results({
-  scores, answers, openCards, toggleCard, onExport,
+  scores, answers, openCards, toggleCard, onExport, onExportExcel, onExportQuestionnaireExcel,
   onHistorial,
   governanceRecord,
 }: {
@@ -1093,31 +1230,12 @@ function Results({
   openCards: Set<string>;
   toggleCard: (id: string) => void;
   onExport: () => void;
+  onExportExcel: () => void;
+  onExportQuestionnaireExcel: () => void;
   onHistorial: () => void;
   governanceRecord: GovernanceRecord;
 }) {
-  type OrientModalState = {
-    subcategoryId: string;
-    categoryEs: string;
-    lines: string[];
-  };
-  const [orientModal, setOrientModal] = useState<OrientModalState | null>(null);
-  const orientCloseRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    if (!orientModal) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOrientModal(null);
-    };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    orientCloseRef.current?.focus();
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [orientModal]);
+  const [selectedControlId, setSelectedControlId] = useState<string>("");
 
   const overall = overallBlockAveragePercentFromAnswers(answers);
   const overallLevel = getMaturityLevel(overall);
@@ -1131,18 +1249,91 @@ function Results({
     high: "bg-emerald-50 text-emerald-700 border-emerald-200",
   };
 
-  const hasAnyLocalExamples = scores.some((s) => {
-    const ans = answers[s.control.id] || {};
-    return s.control.questions.some((q, qi) => {
-      const v = ans[qi];
-      return (q.implementationExamplesEs?.length ?? 0) > 0 && showImplementationGuidance(v);
-    });
-  });
-
   const govMt =
     governanceRecord.measurementType && governanceRecord.measurementType in MEASUREMENT_TYPE_LABELS
       ? MEASUREMENT_TYPE_LABELS[governanceRecord.measurementType as keyof typeof MEASUREMENT_TYPE_LABELS]
       : "";
+
+  useEffect(() => {
+    if (!scores.length) return;
+    if (!selectedControlId || !scores.some((s) => s.control.id === selectedControlId)) {
+      setSelectedControlId(scores[0].control.id);
+    }
+  }, [scores, selectedControlId]);
+
+  const selectedScore = scores.find((s) => s.control.id === selectedControlId) ?? scores[0];
+  const selectedAnswers = selectedScore ? (answers[selectedScore.control.id] || {}) : {};
+  const selectedChartStats = selectedScore
+    ? selectedScore.control.questions.reduce(
+      (acc, _q, qi) => {
+        const val = selectedAnswers[qi];
+        if (val === 2) acc.done += 1;
+        else if (val === 1) acc.partial += 1;
+        else if (val === 0) acc.notDone += 1;
+        else acc.empty += 1;
+        return acc;
+      },
+      { done: 0, partial: 0, notDone: 0, empty: 0 },
+    )
+    : { done: 0, partial: 0, notDone: 0, empty: 0 };
+  const selectedTotalQuestions = selectedScore?.control.questions.length ?? 0;
+  const selectedAnswered = selectedChartStats.done + selectedChartStats.partial + selectedChartStats.notDone;
+  const selectedCoverage = selectedTotalQuestions > 0
+    ? Math.round((selectedAnswered / selectedTotalQuestions) * 100)
+    : 0;
+  const selectedSegments = [
+    {
+      key: "done",
+      label: "Si",
+      count: selectedChartStats.done,
+      cls: "bg-emerald-500",
+      text: "text-emerald-700",
+      soft: "bg-emerald-50 border-emerald-200",
+    },
+    {
+      key: "partial",
+      label: "Parcial",
+      count: selectedChartStats.partial,
+      cls: "bg-amber-500",
+      text: "text-amber-700",
+      soft: "bg-amber-50 border-amber-200",
+    },
+    {
+      key: "notDone",
+      label: "No",
+      count: selectedChartStats.notDone,
+      cls: "bg-red-500",
+      text: "text-red-700",
+      soft: "bg-red-50 border-red-200",
+    },
+    {
+      key: "empty",
+      label: "Sin respuesta",
+      count: selectedChartStats.empty,
+      cls: "bg-zinc-400",
+      text: "text-zinc-700",
+      soft: "bg-zinc-100 border-zinc-200",
+    },
+  ] as const;
+  const selectedAverageScale = selectedTotalQuestions > 0
+    ? ((selectedChartStats.done * 2) + (selectedChartStats.partial * 1)) / selectedTotalQuestions
+    : 0;
+  const selectedAveragePercent = Math.round((selectedAverageScale / 2) * 100);
+  const selectedDominant = selectedSegments.reduce((max, cur) => (cur.count > max.count ? cur : max), selectedSegments[0]);
+  const selectedAlertCount = selectedChartStats.notDone + selectedChartStats.empty;
+  const selectedAlertPercent = selectedTotalQuestions > 0
+    ? Math.round((selectedAlertCount / selectedTotalQuestions) * 100)
+    : 0;
+  let selectedReading = "Sin datos suficientes para interpretar este control.";
+  if (selectedAveragePercent >= 80) {
+    selectedReading = "Desempeno alto del control, con base solida de implementacion.";
+  } else if (selectedAveragePercent >= 60) {
+    selectedReading = "Desempeno medio, hay avance pero aun existen brechas.";
+  } else if (selectedAveragePercent >= 40) {
+    selectedReading = "Desempeno bajo, se recomienda priorizar plan de mejora.";
+  } else {
+    selectedReading = "Desempeno critico, requiere acciones inmediatas en este control.";
+  }
 
   return (
     <div>
@@ -1244,21 +1435,122 @@ La herramienta está diseñada para auto‑diagnóstico, gestión del riesgo y m
       {/* Chips */}
       <div className="flex flex-wrap gap-2 mb-6">
         {scores.map((s) => (
-          <span key={s.control.id} className={`inline-flex items-center gap-1.5 text-[12px] font-bold px-3 py-1.5 rounded-lg border ${levelColors[s.level.cls]}`}>
+          <button
+            type="button"
+            key={s.control.id}
+            onClick={() => setSelectedControlId(s.control.id)}
+            className={`inline-flex items-center gap-1.5 text-[12px] font-bold px-3 py-1.5 rounded-lg border transition-shadow hover:shadow-sm ${
+              levelColors[s.level.cls]
+            } ${selectedControlId === s.control.id ? "ring-2 ring-red-300" : ""}`}
+            title="Ver grafico del control"
+          >
             <i className={s.control.icon} aria-hidden />
             {s.control.baseControlCode}: {s.score}%
-          </span>
+          </button>
         ))}
       </div>
+
+      {selectedScore && (
+        <div className="mb-6 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm ring-1 ring-red-50 print:hidden">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[12px] font-extrabold uppercase tracking-wider text-red-700">
+              Grafico del control seleccionado
+            </p>
+            <p className="text-[12px] font-semibold text-zinc-600">
+              {selectedScore.control.baseControlCode}: {selectedScore.control.name}
+            </p>
+          </div>
+          <div className="mb-3 h-5 w-full overflow-hidden rounded-full border border-zinc-200 bg-zinc-100">
+            {selectedSegments.map((seg) => {
+              const width = selectedTotalQuestions > 0 ? (seg.count / selectedTotalQuestions) * 100 : 0;
+              return (
+                <span
+                  key={seg.key}
+                  className={`inline-block h-full ${seg.cls} transition-all duration-500`}
+                  style={{ width: `${width}%` }}
+                  title={`${seg.label}: ${seg.count} de ${selectedTotalQuestions}`}
+                />
+              );
+            })}
+          </div>
+          <div className="grid gap-2 sm:grid-cols-4">
+            {selectedSegments.map((seg) => (
+              <div key={seg.key} className={`rounded-lg border px-3 py-2 ${seg.soft}`}>
+                <p className={`text-[11px] font-bold uppercase tracking-wide ${seg.text}`}>{seg.label}</p>
+                <p className="text-lg font-black text-zinc-900">{seg.count}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2">
+            <div className="mb-1 flex items-center justify-between text-[12px] font-semibold text-zinc-700">
+              <span>Cobertura respondida</span>
+              <span>{selectedCoverage}% ({selectedAnswered}/{selectedTotalQuestions})</span>
+            </div>
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-zinc-200">
+              <span
+                className="block h-full rounded-full bg-gradient-to-r from-red-500 via-amber-500 to-emerald-500 transition-all duration-500"
+                style={{ width: `${selectedCoverage}%` }}
+              />
+            </div>
+          </div>
+          <div className="mt-3 rounded-lg border border-red-100 bg-red-50/40 px-3 py-3">
+            <p className="text-[11px] font-extrabold uppercase tracking-wider text-red-700">
+              Analisis descriptivo del control
+            </p>
+            <div className="mt-2 grid gap-2 sm:grid-cols-4">
+              <div className="rounded-md border border-zinc-200 bg-white px-2.5 py-2">
+                <p className="text-[11px] font-semibold text-zinc-500">Promedio (0 a 2)</p>
+                <p className="text-[15px] font-black text-zinc-900">{selectedAverageScale.toFixed(2)}</p>
+              </div>
+              <div className="rounded-md border border-zinc-200 bg-white px-2.5 py-2">
+                <p className="text-[11px] font-semibold text-zinc-500">Promedio (%)</p>
+                <p className="text-[15px] font-black text-zinc-900">{selectedAveragePercent}%</p>
+              </div>
+              <div className="rounded-md border border-zinc-200 bg-white px-2.5 py-2">
+                <p className="text-[11px] font-semibold text-zinc-500">Estado dominante</p>
+                <p className="text-[15px] font-black text-zinc-900">{selectedDominant.label}</p>
+              </div>
+              <div className="rounded-md border border-zinc-200 bg-white px-2.5 py-2">
+                <p className="text-[11px] font-semibold text-zinc-500">Riesgo visible</p>
+                <p className="text-[15px] font-black text-zinc-900">{selectedAlertPercent}%</p>
+              </div>
+            </div>
+            <p className="mt-2 text-[12px] leading-relaxed text-zinc-700">
+              {selectedReading} Preguntas con riesgo visible (No + Sin respuesta):{" "}
+              <strong className="text-zinc-900">{selectedAlertCount}</strong> de{" "}
+              <strong className="text-zinc-900">{selectedTotalQuestions}</strong>.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Detail Cards */}
       {scores.map((s) => {
         const isOpen = openCards.has(s.control.id);
+        const chart = s.control.questions.reduce(
+          (acc, _q, qi) => {
+            const v = answers[s.control.id]?.[qi];
+            if (v === 2) acc.done += 1;
+            else if (v === 1) acc.partial += 1;
+            else if (v === 0) acc.notDone += 1;
+            else acc.empty += 1;
+            return acc;
+          },
+          { done: 0, partial: 0, notDone: 0, empty: 0 },
+        );
+        const totalChart = s.control.questions.length || 1;
+        const chartDonePct = chart.done > 0 ? Math.max((chart.done / totalChart) * 100, 4) : 0;
+        const chartPartialPct = chart.partial > 0 ? Math.max((chart.partial / totalChart) * 100, 4) : 0;
+        const chartNoPct = chart.notDone > 0 ? Math.max((chart.notDone / totalChart) * 100, 4) : 0;
+        const chartEmptyPct = chart.empty > 0 ? Math.max((chart.empty / totalChart) * 100, 4) : 0;
         return (
           <div key={s.control.id} className="mb-2.5 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-sm transition-shadow hover:border-red-100 hover:shadow-md">
             <button
               type="button"
-              onClick={() => toggleCard(s.control.id)}
+              onClick={() => {
+                setSelectedControlId(s.control.id);
+                toggleCard(s.control.id);
+              }}
               className="print-card-header flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-red-50/50"
             >
               <div className="w-11 h-11 shrink-0 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-sm"
@@ -1277,20 +1569,38 @@ La herramienta está diseñada para auto‑diagnóstico, gestión del riesgo y m
                   {BASE_CONTROL_NAMES[s.control.baseControlCode] ? ` — ${BASE_CONTROL_NAMES[s.control.baseControlCode]}` : ""}
                 </p>
                 <p className="mb-3 text-[12px] leading-relaxed text-zinc-600">{s.control.baseControlNote}</p>
+                <div className="mb-3 rounded-lg border border-zinc-200 bg-zinc-50/80 p-2.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wide text-zinc-600">Grafico del control</p>
+                  <div className="mt-1.5 rounded-lg border border-zinc-200 bg-white p-2">
+                    <svg
+                      viewBox="0 0 260 110"
+                      className="h-28 w-full"
+                      role="img"
+                      aria-label="Grafico de barras por estado"
+                    >
+                      <line x1="16" y1="92" x2="244" y2="92" stroke="#d4d4d8" strokeWidth="1.5" />
+                      <rect x="28" y={92 - (72 * chartDonePct) / 100} width="36" height={(72 * chartDonePct) / 100} fill="#10b981" rx="2" />
+                      <rect x="84" y={92 - (72 * chartPartialPct) / 100} width="36" height={(72 * chartPartialPct) / 100} fill="#f59e0b" rx="2" />
+                      <rect x="140" y={92 - (72 * chartNoPct) / 100} width="36" height={(72 * chartNoPct) / 100} fill="#ef4444" rx="2" />
+                      <rect x="196" y={92 - (72 * chartEmptyPct) / 100} width="36" height={(72 * chartEmptyPct) / 100} fill="#a1a1aa" rx="2" />
+                      <text x="46" y="106" textAnchor="middle" fontSize="10" fill="#52525b">Si</text>
+                      <text x="102" y="106" textAnchor="middle" fontSize="10" fill="#52525b">Parcial</text>
+                      <text x="158" y="106" textAnchor="middle" fontSize="10" fill="#52525b">No</text>
+                      <text x="214" y="106" textAnchor="middle" fontSize="10" fill="#52525b">Sin resp.</text>
+                    </svg>
+                  </div>
+                  <p className="mt-1.5 text-[11px] text-zinc-600">
+                    Si: <strong className="text-zinc-800">{chart.done}</strong> · Parcial: <strong className="text-zinc-800">{chart.partial}</strong> · No: <strong className="text-zinc-800">{chart.notDone}</strong> · Sin respuesta: <strong className="text-zinc-800">{chart.empty}</strong>
+                  </p>
+                </div>
 
                 <p className="mb-2 text-[13px] font-extrabold uppercase tracking-wider text-red-700">
-                  Subcategorias: respuesta y recomendaciones
-                </p>
-                <p className="mb-2 text-[12px] leading-snug text-zinc-500">
-                  Recomendaciones del catalogo NIST solo si la respuesta es <strong className="text-zinc-700">No</strong> o <strong className="text-zinc-700">Parcial</strong>. Con <strong className="text-zinc-700">Si</strong> no se muestran. Sin respuesta, tampoco.
+                  Subcategorias: respuesta registrada
                 </p>
                 <div className="results-detail-scroll mb-4 max-h-[min(28rem,70vh)] space-y-2 overflow-y-auto pr-0.5 print:max-h-none print:overflow-visible">
                   {s.control.questions.map((q, qi) => {
                     const v = answers[s.control.id]?.[qi];
                     const st = v === undefined ? "—" : v === 2 ? "Si" : v === 1 ? "Parcial" : "No";
-                    const ex = q.implementationExamplesEs;
-                    const n = ex?.length ?? 0;
-                    const showGuide = n > 0 && showImplementationGuidance(v);
                     return (
                       <div
                         key={q.subcategoryId}
@@ -1308,108 +1618,18 @@ La herramienta está diseñada para auto‑diagnóstico, gestión del riesgo y m
                           <span className="font-semibold text-zinc-600">Pregunta: </span>
                           {questionPlainBody(q.text, q.subcategoryId)}
                         </p>
-                        {showGuide && (
-                          <>
-                            <div className="mt-2 border-t border-zinc-200/90 pt-2 print:hidden">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setOrientModal({
-                                    subcategoryId: q.subcategoryId,
-                                    categoryEs: q.categoryEs,
-                                    lines: ex!,
-                                  })
-                                }
-                                className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white px-2 py-1 text-[13px] font-semibold text-red-700 shadow-sm transition-colors hover:border-red-300 hover:bg-red-50"
-                              >
-                                <i className="fa-solid fa-up-right-from-square text-[11px]" aria-hidden />
-                                Ver recomendacion ({n} {n === 1 ? "linea" : "lineas"})
-                              </button>
-                            </div>
-                            <div className="mt-2 hidden border-t border-emerald-200 bg-emerald-50/80 px-2 py-2 print:block">
-                              <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-900">
-                                Recomendacion del catalogo
-                              </p>
-                              <ol className="mt-1 list-decimal space-y-1 pl-4 text-[11px] leading-snug text-zinc-800">
-                                {ex!.map((line, li) => (
-                                  <li key={li}>{line}</li>
-                                ))}
-                              </ol>
-                            </div>
-                          </>
-                        )}
                       </div>
                     );
                   })}
                 </div>
+                <p className="rounded-md border border-emerald-200 bg-emerald-50/70 px-2.5 py-2 text-[12px] leading-snug text-emerald-900">
+                  Para corregir brechas, use el archivo Excel exportado en <strong>Exportar Excel (Checklist)</strong>. Ahi encontrara recomendaciones en filas separadas y columna de checklist.
+                </p>
               </div>
             )}
           </div>
         );
       })}
-
-      {orientModal && (
-        <div
-          className="no-print fixed inset-0 z-[100] flex items-end justify-center sm:items-center sm:p-4"
-          role="presentation"
-        >
-          <button
-            type="button"
-            className="absolute inset-0 bg-zinc-900/50 backdrop-blur-[2px]"
-            aria-label="Cerrar recomendacion"
-            onClick={() => setOrientModal(null)}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="orient-dialog-title"
-            className="relative flex max-h-[min(88dvh,40rem)] w-full max-w-lg flex-col rounded-t-2xl border border-zinc-200 bg-white shadow-2xl ring-1 ring-zinc-200/80 sm:max-h-[min(85vh,36rem)] sm:rounded-2xl"
-          >
-            <div className="flex shrink-0 items-start justify-between gap-3 border-b border-zinc-100 px-4 py-3 sm:px-5">
-              <div className="min-w-0">
-                <h3 id="orient-dialog-title" className="font-mono text-sm font-bold text-red-800">
-                  {orientModal.subcategoryId}
-                </h3>
-                <p className="mt-0.5 text-[12px] text-zinc-500">{orientModal.categoryEs}</p>
-                <p className="mt-1 text-[12px] font-semibold text-amber-900">
-                  Recomendacion(es)
-                </p>
-                <p className="mt-1 text-[12px] leading-snug text-zinc-600">
-                  Referencia: material alineado con{" "}
-                  <strong className="text-zinc-800">Download CSF 2.0 Informative Reference in the Core</strong>{" "}
-                  (NIST CSF 2.0 Informative References).{" "}
-                  <a
-                    href={NIST_CSF_INFORMATIVE_REFERENCES_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-red-700 underline decoration-red-200 underline-offset-2 hover:text-red-800"
-                  >
-                    nist.gov/cyberframework/informative-references
-                    <i className="fa-solid fa-arrow-up-right-from-square ml-0.5 text-[9px]" aria-hidden />
-                  </a>
-                  . Lo mostrado aqui sigue el catalogo de este documento.
-                </p>
-              </div>
-              <button
-                ref={orientCloseRef}
-                type="button"
-                onClick={() => setOrientModal(null)}
-                className="shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 text-[12px] font-bold text-zinc-700 transition-colors hover:bg-zinc-100"
-              >
-                Cerrar
-              </button>
-            </div>
-            <ul className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3 text-[13px] leading-relaxed text-zinc-800 sm:px-5">
-              {orientModal.lines.map((line, i) => (
-                <li key={i} className="flex gap-2.5 border-b border-zinc-100 pb-3 last:border-0 last:pb-0">
-                  <span className="shrink-0 font-mono text-[12px] font-bold text-emerald-800">{i + 1}.</span>
-                  <span>{line}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
 
       {/* Actions */}
       <div className="flex justify-center gap-3 mt-8 flex-wrap">
@@ -1424,6 +1644,14 @@ La herramienta está diseñada para auto‑diagnóstico, gestión del riesgo y m
         <button type="button" onClick={() => { try { onExport(); } catch(e) { alert('Error al exportar: ' + e); } }} className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 px-6 py-2.5 text-sm font-bold text-white shadow-sm ring-1 ring-red-300/50 transition-all hover:bg-red-700">
           <i className="fa-solid fa-file-code" aria-hidden />
           Descargar Informe (HTML)
+        </button>
+        <button type="button" onClick={() => { try { onExportExcel(); } catch(e) { alert('Error al exportar excel: ' + e); } }} className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-6 py-2.5 text-sm font-bold text-emerald-900 shadow-sm transition-all hover:bg-emerald-100">
+          <i className="fa-solid fa-file-excel" aria-hidden />
+          Exportar Excel (Checklist)
+        </button>
+        <button type="button" onClick={() => { try { onExportQuestionnaireExcel(); } catch(e) { alert('Error al exportar cuestionario excel: ' + e); } }} className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-blue-300 bg-blue-50 px-6 py-2.5 text-sm font-bold text-blue-900 shadow-sm transition-all hover:bg-blue-100">
+          <i className="fa-solid fa-table-cells-large" aria-hidden />
+          Exportar Excel (Cuestionario vacio)
         </button>
       </div>
 

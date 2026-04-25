@@ -5,6 +5,24 @@ Todos los cambios notables del proyecto se documentan en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [2.5.1] - 2026-04-25
+
+### Added
+
+- **Resultados** (`page.tsx`): panel grafico por control seleccionado (chips C0-C9) con analisis descriptivo (frecuencias, cobertura respondida, promedio 0-2, estado dominante y riesgo visible).
+- **Exportacion Excel por checklist** (`page.tsx`): nuevo boton **Exportar Excel (Checklist)** que genera `.xlsx` por hojas (`C0` a `C9`) con recomendaciones por subcategoria y columna de checklist.
+- **Exportacion Excel de cuestionario** (`page.tsx`): nuevo boton **Exportar Excel (Cuestionario vacio)** con el mismo esquema por hojas (`C0` a `C9`) para levantamiento manual.
+- Dependencia `xlsx` en `anci-advisor/package.json` para generar archivos Excel nativos.
+
+### Changed
+
+- **Reportes HTML/PDF** (`page.tsx`): cada control incluye grafico de barras por estado (`Si`, `Parcial`, `No`, `Sin respuesta`) y conteos; en PDF se asegura render correcto con grafico SVG en cada tarjeta de control.
+- **Excel checklist** (`page.tsx`): estructura ordenada por hojas; recomendaciones en filas separadas; merge visual de columnas base (`Control`, `Categoria`, `Subcategoria`, `Pregunta`, `Respuesta`) cuando hay multiples recomendaciones; columna `Checklist` simplificada a `x` (implementado) o vacio.
+- **Excel cuestionario vacio** (`page.tsx`): mismo formato visual del checklist (anchos de columna, filtros, encabezado congelado y hojas por control), sin columnas de `Respuesta` ni `Recomendaciones`.
+
+### Removed
+- Recomendaciones detalladas en la vista de resultados y en el informe HTML/PDF (modal/bloques de orientacion por subcategoria): el flujo de correccion se centraliza en el archivo Excel checklist exportado.
+
 ## [2.5] - 2026-04-24
 
 ### Added
@@ -20,7 +38,6 @@ y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ### Removed
 - Texto tipo *«herramienta educativa y no sustituye al PDF de NIST»* en el sentido de aviso duplicado: el mensaje de limites queda en el bloque de Resultados y en el **disclaimer** del pie (sin repetir la formula anterior del PDF como unico sustituto del aviso legal).
-
 
 ## [2.4] - 2026-04-12
 
