@@ -190,5 +190,5 @@ MIT — ver [LICENSE](./LICENSE).
 
 ## Contacto
 
-[uptlibre](https://www.uptlibre.pe) — herramienta con fines educativos; no sustituye auditoria formal.  
+[uptlibre](https://www.uptlibre.pe)   
 Sitio de referencia del fork: [Asesor ANCI (TTPSEC)](https://ttpsecspa.github.io/ANCI/).

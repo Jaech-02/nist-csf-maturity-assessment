@@ -22,7 +22,12 @@ import {
   type EvalSnapshot,
 } from "@/lib/snapshots";
 import { ASSET_BASE_PATH, PUBLIC_SITE_URL, UPTLIBRE_PORTAL_URL } from "@/lib/site";
-import { NIST_CSF_INFORMATIVE_REFERENCES_URL, NIST_CSF_PORTAL_URL } from "@/lib/nist-links";
+import {
+  NIST_CSF_CSWP29_FINAL_URL,
+  NIST_CSF_CSWP29_PDF_URL,
+  NIST_CSF_INFORMATIVE_REFERENCES_URL,
+  NIST_CSF_PORTAL_URL,
+} from "@/lib/nist-links";
 import {
   clearGovernanceRecord,
   emptyGovernanceRecord,
@@ -33,6 +38,7 @@ import {
   type GovernanceMeasurementType,
   type GovernanceRecord,
 } from "@/lib/governance-record";
+import { SiteFooter, SiteHeader, SiteNavigation } from "@/app/_components";
 
 const BASE = ASSET_BASE_PATH;
 const PUBLIC_SITE = PUBLIC_SITE_URL;
@@ -119,7 +125,7 @@ function InstrumentResearchDimensionsSection() {
                   <h3 className="mt-1 font-serif text-base font-bold leading-snug text-zinc-900">{it.title}</h3>
                 </div>
               </div>
-              <ul className="mt-1 space-y-2 text-[11px] leading-relaxed text-zinc-600">
+              <ul className="mt-1 space-y-2 text-[12px] leading-relaxed text-zinc-600">
                 {it.how.map((line, li) => (
                   <li key={`${it.n}-${li}`} className="flex gap-2">
                     <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-red-400" aria-hidden />
@@ -178,7 +184,7 @@ function GovernanceRecordSection({
         <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm ring-1 ring-red-50/50 sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="sm:col-span-2">
-              <label htmlFor="gov-institution" className={label}>
+              <label htmlFor="gov-institution" className={label + " text-[12px]"}>
                 Institucion u organismo
               </label>
               <input
@@ -191,7 +197,7 @@ function GovernanceRecordSection({
               />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="gov-scope" className={label}>
+              <label htmlFor="gov-scope" className={label + " text-[12px]"}>
                 Alcance de la evaluacion (TIC criticas, unidades, sistemas)
               </label>
               <textarea
@@ -203,7 +209,7 @@ function GovernanceRecordSection({
               />
             </div>
             <div>
-              <label htmlFor="gov-resp-name" className={label}>
+              <label htmlFor="gov-resp-name" className={label + " text-[12px]"}>
                 Responsable de la evaluacion (nombre)
               </label>
               <input
@@ -216,7 +222,7 @@ function GovernanceRecordSection({
               />
             </div>
             <div>
-              <label htmlFor="gov-resp-role" className={label}>
+              <label htmlFor="gov-resp-role" className={label + " text-[12px]"}>
                 Cargo
               </label>
               <input
@@ -228,7 +234,7 @@ function GovernanceRecordSection({
               />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="gov-resp-area" className={label}>
+              <label htmlFor="gov-resp-area" className={label + " text-[12px]"}>
                 Area / dependencia
               </label>
               <input
@@ -240,7 +246,7 @@ function GovernanceRecordSection({
               />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="gov-measure-type" className={label}>
+              <label htmlFor="gov-measure-type" className={label + " text-[12px]"}>
                 Tipo de medicion
               </label>
               <select
@@ -261,7 +267,7 @@ function GovernanceRecordSection({
               </select>
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="gov-policy" className={label}>
+              <label htmlFor="gov-policy" className={label + " text-[12px]"}>
                 Referencia a politica / plan de seguridad (codigo, version o enlace interno)
               </label>
               <input
@@ -273,7 +279,7 @@ function GovernanceRecordSection({
               />
             </div>
             <div className="sm:col-span-2">
-              <label htmlFor="gov-notes" className={label}>
+              <label htmlFor="gov-notes" className={label + " text-[12px]"}>
                 Notas (opcional)
               </label>
               <textarea
@@ -519,7 +525,7 @@ h1{color:#7f1d1d;border-bottom:3px solid #b91c1c;padding-bottom:.5rem}h2{color:#
     });
 
     html += `<div class="disclaimer"><strong>PLATAFORMA ACADEMICA Y EDUCATIVA - uptlibre</strong><br>
-No afiliada ni respaldada por NIST ni por el gobierno de EE.UU. El CSF es marco voluntario; esta herramienta es una aproximacion educativa.
+No afiliada ni respaldada por NIST. El CSF es marco voluntario.
 No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}">${PUBLIC_SITE.replace("https://", "")}</a></strong> — Ningun dato salio de su navegador.
 <br><br>Herramienta v${APP_VERSION} (${APP_DATE}).
 <br><br><a href="${REPO_URL}">Codigo fuente (GitHub)</a> — Licencia MIT</div></body></html>`;
@@ -536,127 +542,8 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
   // ─── RENDER ───
   return (
     <div className="min-h-screen flex flex-col bg-zinc-50 overflow-x-hidden">
-      {/* HEADER: marca + producto + confianza */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-red-200/60 shadow-sm">
-        <div className="max-w-6xl mx-auto px-3 md:px-4 py-2 md:py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 md:gap-3 min-w-0">
-            <div className="flex h-10 w-10 md:h-12 md:w-12 shrink-0 items-center justify-center rounded-lg bg-white p-1.5 ring-1 ring-zinc-200 shadow-sm">
-              <img src={`${BASE}/logo_uptlibre.png`} alt="uptlibre" className="max-h-full max-w-full object-contain" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-sm md:text-lg font-black text-zinc-900 tracking-tight font-serif">uptlibre</h1>
-              <p className="text-[10px] md:text-[11px] text-zinc-600 font-medium truncate">NIST CSF 2.0 | Madurez</p>
-              <a
-                href={UPTLIBRE_PORTAL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-0.5 block max-w-[11rem] truncate text-[9px] font-semibold text-red-700 hover:text-red-800 hover:underline sm:max-w-none"
-              >
-                UPTLIBRE — Libertad y Pensamiento (UPT)
-              </a>
-            </div>
-          </div>
-          <div className="hidden sm:flex gap-2">
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <i className="fa-solid fa-user-secret text-[11px]" aria-hidden />
-              Anonimo
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-red-50 text-red-700 border border-red-200">
-              <i className="fa-solid fa-shield-halved text-[11px]" aria-hidden />
-              Seguro
-            </span>
-            <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-zinc-100 text-zinc-700 border border-zinc-200">
-              <i className="fa-solid fa-ban text-[11px]" aria-hidden />
-              Sin Rastreo
-            </span>
-          </div>
-          {/* Mobile: compact single badge */}
-          <div className="flex sm:hidden">
-            <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
-              <i className="fa-solid fa-user-shield text-[10px]" aria-hidden />
-              100% Privado
-            </span>
-          </div>
-        </div>
-      </header>
-
-      {/* NAV: progreso y acceso a Core (mismo contenido, contenedor alineado al shell) */}
-      <nav
-        className={`sticky top-[60px] z-40 border-b px-4 py-2 transition-all duration-300 ${screen === 0 ? "bg-zinc-50/95 border-zinc-200/80 backdrop-blur-sm" : "bg-white/95 border-red-100 shadow-sm backdrop-blur-sm"}`}
-        aria-label="Navegacion de evaluacion"
-      >
-        <div className="max-w-6xl mx-auto">
-          {screen === 0 ? (
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 py-1">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-red-600">
-                <i className="fa-solid fa-house text-[13px]" aria-hidden />
-                Inicio
-              </span>
-              <span className="text-zinc-300">|</span>
-              <span className="inline-flex items-center gap-1.5 text-xs text-zinc-600">
-                <i className="fa-solid fa-layer-group text-[12px] text-zinc-400" aria-hidden />
-                10 controles (C0-C9) · 106 subcategorias
-              </span>
-              <span className="text-zinc-300">|</span>
-              <button type="button" onClick={() => goTo(SCREEN_HISTORIAL)} className="inline-flex items-center gap-1.5 text-xs text-zinc-600 hover:text-red-600 font-semibold transition-colors">
-                <i className="fa-solid fa-chart-line text-[12px]" aria-hidden />
-                Seguimiento
-              </button>
-              <span className="text-zinc-300">|</span>
-              <button type="button" onClick={() => goTo(SCREEN_CORE)} className="inline-flex items-center gap-1.5 text-xs text-zinc-600 hover:text-red-600 font-semibold transition-colors">
-                <i className="fa-solid fa-sitemap text-[12px]" aria-hidden />
-                Core CSF
-              </button>
-            </div>
-          ) : (
-            <>
-              {/* Progress bar */}
-              <div className="h-1.5 bg-red-100 rounded-full overflow-hidden mb-2">
-                <div className="h-full bg-gradient-to-r from-red-400 via-red-500 to-amber-400 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
-              </div>
-              {/* Nav pills */}
-              <div className="flex items-center gap-0.5 overflow-x-auto pb-0.5 scrollbar-none">
-                <button type="button" onClick={() => goTo(0)} className="inline-flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-md whitespace-nowrap font-semibold text-zinc-600 hover:text-red-700 hover:bg-red-50 transition-all">
-                  <i className="fa-solid fa-house text-[12px]" aria-hidden />
-                  Inicio
-                </button>
-                {CONTROLS.map((c, i) => {
-                  const isActive = screen === i + 1;
-                  const isDone = screen > i + 1;
-                  return (
-                    <button type="button" key={c.id} onClick={() => goTo(i + 1)} title={`${c.baseControlCode}: ${c.name}`}
-                      className={`text-[9px] md:text-[10px] min-w-8 h-8 md:min-w-9 md:h-9 px-0.5 rounded-md flex items-center justify-center font-mono font-black transition-all ${isActive ? "bg-red-600 text-white shadow-md shadow-red-200 scale-110 ring-1 ring-red-300" : isDone ? "bg-emerald-100 text-emerald-800 border border-emerald-200" : "text-zinc-500 hover:text-red-700 hover:bg-red-50 border border-zinc-200 bg-white"}`}>
-                      {c.baseControlCode}
-                    </button>
-                  );
-                })}
-                <div className="w-px h-6 bg-zinc-200 mx-1.5 shrink-0" />
-                <button type="button" onClick={() => goTo(SCREEN_RESULTS)} className={`inline-flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-md whitespace-nowrap font-semibold transition-all ${screen === SCREEN_RESULTS ? "bg-red-600 text-white shadow-md shadow-red-100" : "text-zinc-600 hover:text-red-700 hover:bg-red-50 border border-zinc-200 bg-white"}`}>
-                  <i className="fa-solid fa-chart-pie text-[12px]" aria-hidden />
-                  Resultados
-                </button>
-                <button type="button" onClick={() => goTo(SCREEN_HISTORIAL)} className={`inline-flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-md whitespace-nowrap font-semibold transition-all ${screen === SCREEN_HISTORIAL ? "bg-amber-700 text-white shadow-md shadow-amber-100" : "text-zinc-600 hover:text-red-700 hover:bg-red-50 border border-zinc-200 bg-white"}`}>
-                  <i className="fa-solid fa-chart-line text-[12px]" aria-hidden />
-                  Seguimiento
-                </button>
-                <button type="button" onClick={() => goTo(SCREEN_CORE)} className={`inline-flex items-center gap-1.5 text-[11px] px-3 py-1.5 rounded-md whitespace-nowrap font-semibold transition-all ${screen === SCREEN_CORE ? "bg-red-700 text-white shadow-md shadow-red-100" : "text-zinc-600 hover:text-red-700 hover:bg-red-50 border border-zinc-200 bg-white"}`}>
-                  <i className="fa-solid fa-sitemap text-[12px]" aria-hidden />
-                  Core CSF
-                </button>
-                <button
-                  type="button"
-                  onClick={restartEval}
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-zinc-700 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-800"
-                  title="Borra todas las respuestas del cuestionario en este navegador"
-                >
-                  <i className="fa-solid fa-rotate-right text-[11px]" aria-hidden />
-                  Nueva evaluacion
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </nav>
+      <SiteHeader />
+      <SiteNavigation screen={screen} progress={progress} onGoTo={goTo} onRestartEval={restartEval} />
 
       {/* MAIN: inicio en dos bloques (hero ancho + contenido); resto en ficha */}
       <main className="flex-1 w-full min-w-0">
@@ -674,7 +561,7 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                   {/* Title */}
                   <h2 className="animate-fade-in-up-d1 text-3xl md:text-5xl lg:text-6xl font-black text-zinc-900 tracking-tight mb-1 md:mb-2 leading-tight font-serif">
                     Asesor de<br />
-                    <span className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 bg-clip-text text-transparent">Ciberseguridad NIST CSF</span>
+                    <span className="bg-gradient-to-r from-red-600 via-red-700 to-red-800 bg-clip-text text-transparent">Ciberseguridad</span>
                   </h2>
 
                   {/* Subtitle */}
@@ -689,7 +576,7 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                       { label: "Sin Rastreo", color: "purple" },
                       { label: "MIT License", color: "amber" },
                     ].map((b) => (
-                      <span key={b.label} className="glass text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full text-zinc-700">
+                      <span key={b.label} className="glass text-[12px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full text-zinc-700">
                         {b.label}
                       </span>
                     ))}
@@ -698,7 +585,7 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                   {/* Framework chips */}
                   <div className="animate-fade-in-up-d4 hidden md:flex flex-wrap justify-center gap-1.5 mb-10">
                     {CSF_FUNCTIONS.map((f) => (
-                      <span key={f.code} className="text-[10px] font-mono font-semibold px-2.5 py-1 rounded-md bg-white/90 text-zinc-700 border border-red-100 shadow-sm" title={f.nameEn}>
+                      <span key={f.code} className="text-[12px] font-mono font-semibold px-2.5 py-1 rounded-md bg-white/90 text-zinc-700 border border-red-100 shadow-sm" title={f.nameEn}>
                         {f.code} · {f.nameEs}
                       </span>
                     ))}
@@ -737,8 +624,8 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                   </div>
 
                   {/* Legal line */}
-                  <p className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[10px] text-zinc-500">
-                    <i className="fa-solid fa-book-open text-[10px] text-zinc-400" aria-hidden />
+                  <p className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 text-[12px] text-zinc-500">
+                    <i className="fa-solid fa-book-open text-[12px] text-zinc-400" aria-hidden />
                     <span>NIST CSF 2.0 · Referencia: csrc.nist.gov · Sin afiliacion a NIST</span>
                   </p>
                 </div>
@@ -885,7 +772,7 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                                   className="mx-auto mt-4 h-px max-w-[3rem] bg-gradient-to-r from-transparent via-red-400/70 to-transparent opacity-60 transition group-hover:opacity-100 group-hover:via-red-500"
                                   aria-hidden
                                 />
-                                <p className="mt-3 text-left text-[11px] font-semibold leading-snug text-zinc-800 sm:text-center">
+                                <p className="mt-3 text-left text-[12px] font-semibold leading-snug text-zinc-800 sm:text-center">
                                   {BASE_CONTROL_NAMES[code]}
                                 </p>
                               </div>
@@ -965,14 +852,15 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                 Listado de las 106 subcategorias oficiales (NIST.CSWP.29 Anexo A). La numeracion no es consecutiva: los huecos son propios del estandar.
               </p>
               <div className="overflow-x-auto rounded-lg border border-zinc-200 shadow-sm bg-white max-h-[70vh] overflow-y-auto ring-1 ring-red-100/60">
-                <table className="w-full text-left text-xs min-w-[720px]">
+                <table className="w-full text-left text-xs min-w-[820px]">
                   <thead className="sticky top-0 z-10">
                     <tr className="bg-gradient-to-r from-red-500 to-red-600 text-white shadow-sm">
-                      <th className="px-3 py-3 font-bold text-[11px]">Ctrl</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">ID</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">Fn</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">Categoria</th>
-                      <th className="px-3 py-3 font-bold text-[11px]">Resultado (oficial EN)</th>
+                      <th className="px-3 py-3 font-bold text-[13px]">Ctrl</th>
+                      <th className="px-3 py-3 font-bold text-[13px]">ID</th>
+                      <th className="px-3 py-3 font-bold text-[13px]">Fn</th>
+                      <th className="px-3 py-3 font-bold text-[13px]">Categoria</th>
+                      <th className="px-3 py-3 font-bold text-[13px]">Outcome (ES)</th>
+                      <th className="px-3 py-3 font-bold text-[13px] whitespace-nowrap">pdf | pag</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -982,15 +870,37 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
                         <td className="px-3 py-2 font-mono font-semibold text-zinc-900">{row.id}</td>
                         <td className="px-3 py-2 font-mono font-semibold text-red-700">{row.function}</td>
                         <td className="px-3 py-2 text-zinc-800">{row.categoryKey} — {row.categoryEs}</td>
-                        <td className="px-3 py-2 text-zinc-600 leading-relaxed">{row.outcomeEn}</td>
+                        <td className="px-3 py-2 text-zinc-800 leading-relaxed">{row.outcomeEs ?? "—"}</td>
+                        <td className="px-3 py-2 align-top whitespace-nowrap text-[11px] font-semibold">
+                          <a href={NIST_CSF_CSWP29_PDF_URL} target="_blank" rel="noopener noreferrer" className="text-red-700 underline hover:text-red-900">
+                            pdf
+                          </a>
+                          <span className="text-zinc-300 mx-1">|</span>
+                          <span className="text-zinc-700 font-mono">{row.page}</span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-              <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4">
-                <p className="text-[11px] text-zinc-600 leading-relaxed">
-                  <strong className="text-zinc-800">Resultado (oficial EN):</strong> Outcome del Anexo A (NIST.CSWP.29). Las preguntas en español del evaluador ayudan a autoevaluar la cercania a cada Outcome del Core.
+              <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 p-4 space-y-2">
+                <p className="text-[12px] font-semibold text-zinc-800">Fuentes oficiales NIST (PDF y pagina)</p>
+                <p className="text-[11px] leading-relaxed">
+                  <a href={NIST_CSF_CSWP29_PDF_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-red-700 underline hover:text-red-900">
+                    pdf
+                  </a>
+                  <span className="text-zinc-400 mx-1">|</span>
+                  <a href={NIST_CSF_CSWP29_FINAL_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-red-700 underline hover:text-red-900">
+                    pag
+                  </a>
+                  <span className="text-zinc-400 mx-1">|</span>
+                  <a href={NIST_CSF_PORTAL_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-red-700 underline hover:text-red-900">
+                    portal
+                  </a>
+                  <span className="text-zinc-400 mx-1">|</span>
+                  <a href={NIST_CSF_INFORMATIVE_REFERENCES_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-red-700 underline hover:text-red-900">
+                    informative references
+                  </a>
                 </p>
               </div>
             </div>
@@ -1000,94 +910,7 @@ No reemplaza auditoria formal ni asesoria legal. <strong><a href="${PUBLIC_SITE}
         </div>
       </main>
 
-      {/* FOOTER */}
-      <footer className="border-t-2 border-red-200 bg-white text-zinc-800 shadow-[0_-8px_30px_-12px_rgba(0,0,0,0.06)]">
-        <div className="max-w-5xl mx-auto px-6 py-10">
-          {/* Top row: 3 columns */}
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {/* Col 1: Brand */}
-            <div className="flex flex-col items-center md:items-start">
-              <div className="mb-3 rounded-lg bg-white p-2 ring-1 ring-zinc-200 shadow-sm">
-                <img src={`${BASE}/logo_uptlibre.png`} alt="uptlibre" className="h-10 w-auto" />
-              </div>
-              <a href={PUBLIC_SITE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-base font-black text-zinc-900 hover:text-red-600 tracking-tight transition-colors font-serif">
-                <i className="fa-solid fa-globe text-red-600 text-lg" aria-hidden />
-                nistcsf.uptlibre.pe
-              </a>
-              <p className="text-[11px] text-zinc-600 mt-2 font-semibold">Libertad y Pensamiento</p>
-              <a
-                href={UPTLIBRE_PORTAL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-2 inline-flex items-center gap-2 text-[11px] font-bold text-red-700 hover:text-red-800 transition-colors"
-              >
-                <i className="fa-solid fa-flask text-sm" aria-hidden />
-                UPTLIBRE — www.uptlibre.pe
-              </a>
-              <p className="text-[10px] text-zinc-500 mt-1 max-w-xs text-center md:text-left leading-snug">
-                Grupo de Investigacion &quot;Libertad y Pensamiento&quot;
-                <br />
-                Facultad de Ingenieria — UPT
-              </p>
-              <div className="flex items-center gap-2 mt-3">
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200">
-                  v{APP_VERSION}
-                </span>
-                <span className="text-[10px] font-mono text-zinc-500">
-                  {APP_DATE}
-                </span>
-              </div>
-            </div>
-
-            {/* Col 2: Frameworks */}
-            <div className="flex flex-col items-center">
-              <p className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-3">
-                <i className="fa-solid fa-book-bookmark text-zinc-400" aria-hidden />
-                Marco de referencia
-              </p>
-              <div className="flex flex-wrap justify-center gap-1.5">
-                <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-red-50 text-red-800 border border-red-200">
-                  <i className="fa-solid fa-shield-halved text-[11px]" aria-hidden />
-                  NIST CSF 2.0
-                </span>
-              </div>
-              <div className="flex flex-wrap justify-center gap-1.5 mt-3">
-                {["Sin cookies", "Sin registro", "Sin analytics", "100% local"].map((t) => (
-                  <span key={t} className="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-zinc-200 bg-zinc-50 text-zinc-600">{t}</span>
-                ))}
-              </div>
-            </div>
-
-            {/* Col 3: Links */}
-            <div className="flex flex-col items-center md:items-end gap-2">
-              <p className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                <i className="fa-solid fa-scale-balanced text-zinc-400" aria-hidden />
-                Legal y codigo
-              </p>
-              <a href={`${REPO_URL}/blob/main/LICENSE`} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 hover:text-emerald-800 transition-colors">
-                <i className="fa-solid fa-file-contract text-sm" aria-hidden />
-                MIT License
-              </a>
-              <a href={REPO_URL} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-zinc-600 hover:text-red-600 transition-colors">
-                <i className="fa-brands fa-github text-sm" aria-hidden />
-                GitHub — nist-csf-maturity-assessment
-              </a>
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="border-t border-zinc-200 pt-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p className="text-[10px] text-zinc-500">
-              © {new Date().getFullYear()} uptlibre — Asesor madurez NIST CSF 2.0
-            </p>
-            <p className="text-[10px] font-mono text-zinc-500">
-              v{APP_VERSION} | {APP_DATE} | Sin afiliacion NIST
-            </p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <a
         href={UPTLIBRE_PORTAL_URL}
@@ -1142,7 +965,7 @@ function QuestionScreen({
             <p className="mt-1 text-xs font-medium text-zinc-500 leading-snug">{control.name}</p>
             <p className="mt-3 text-sm leading-relaxed text-zinc-800">{control.plainIntro}</p>
             {(control.id === "p1" || control.id === "p2" || control.id === "p3" || control.id === "p5") && (
-              <p className="mt-2 text-[10px] leading-snug text-zinc-600">
+              <p className="mt-2 text-[12px] leading-snug text-zinc-600">
                 Este bloque concentra <strong>gobernanza (GV)</strong> y/o <strong>evaluacion de riesgos (ID.RA)</strong>, pilares centrales del Core para dirigir y priorizar el riesgo.
               </p>
             )}
@@ -1156,41 +979,41 @@ function QuestionScreen({
           aria-expanded={showTechnical}
         >
           {showTechnical ? "Ocultar detalle tecnico" : "Ver detalle tecnico (codigos NIST)"}
-          <i className={`fa-solid text-[10px] ${showTechnical ? "fa-chevron-up" : "fa-chevron-down"}`} aria-hidden />
+          <i className={`fa-solid text-[12px] ${showTechnical ? "fa-chevron-up" : "fa-chevron-down"}`} aria-hidden />
         </button>
 
         {showTechnical && (
           <div className="mt-3 space-y-3 rounded-lg border border-amber-200/80 bg-amber-50/40 p-3 text-left">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-amber-900">Referencia marco de 10 y NIST</p>
-            <p className="text-[11px] text-zinc-700">
+            <p className="text-[12px] font-bold uppercase tracking-wider text-amber-900">Referencia marco de 10 y NIST</p>
+            <p className="text-[13px] text-zinc-700">
               <span className="font-mono font-bold text-red-800">{control.baseControlCode}</span>
               {catalogLabel ? ` — ${catalogLabel}` : ""}
             </p>
-            <p className="text-[11px] leading-relaxed text-zinc-600">{control.baseControlNote}</p>
-            <p className="text-[10px] font-mono text-zinc-600 break-words leading-relaxed max-h-32 overflow-y-auto border border-amber-200/60 rounded bg-white/80 p-2">
+            <p className="text-[13px] leading-relaxed text-zinc-600">{control.baseControlNote}</p>
+            <p className="text-[12px] font-mono text-zinc-600 break-words leading-relaxed max-h-32 overflow-y-auto border border-amber-200/60 rounded bg-white/80 p-2">
               {control.subcategoryIds.join(", ")}
             </p>
-            <p className="text-[10px] text-zinc-500">{control.description}</p>
+            <p className="text-[12px] text-zinc-500">{control.description}</p>
           </div>
         )}
       </div>
 
       <div className="mb-5 rounded-lg border-l-4 border-l-red-400 bg-red-50/70 px-4 py-3 shadow-sm">
-        <p className="inline-flex items-center gap-1.5 text-[11px] font-bold text-red-800">
+        <p className="inline-flex items-center gap-1.5 text-[13px] font-bold text-red-800">
           <i className="fa-solid fa-circle-exclamation text-sm" aria-hidden />
           Por que importa este bloque
         </p>
-        <p className="mt-1 text-sm leading-relaxed text-zinc-800">{control.plainRiskLine}</p>
+        <p className="mt-1 text-[14px] leading-relaxed text-zinc-800">{control.plainRiskLine}</p>
       </div>
 
       <div className="mb-3 rounded-md bg-zinc-100/80 px-3 py-2">
-        <p className="text-xs font-medium text-zinc-700 leading-relaxed">
+        <p className="text-[12px] font-medium text-zinc-700 leading-relaxed">
           <strong className="inline-flex items-center gap-1.5 text-zinc-900">
             <i className="fa-solid fa-circle-info text-red-600 text-sm" aria-hidden />
             Como leer cada pregunta:
           </strong> NIST no publica un cuestionario Si/No; publica un <strong>Outcome</strong> (resultado deseado de la organizacion). La frase en español abajo es una traduccion/parafrasis para que puedas evaluar si eso se cumple. La frase en ingles gris es la del documento oficial (Anexo A, NIST.CSWP.29). Las 106 subcategorias del Core NIST CSF 2.0 son el marco unico de este instrumento.
         </p>
-        <p className="text-xs text-zinc-600 mt-2">
+        <p className="text-[12px] text-zinc-600 mt-2">
           Responde segun la situacion <strong>hoy</strong> (no el objetivo futuro). Puedes volver atras y cambiar respuestas.
         </p>
       </div>
@@ -1200,16 +1023,16 @@ function QuestionScreen({
         {control.questions.map((q, qIdx) => (
           <div key={qIdx} className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm hover:border-red-100 hover:shadow-md transition-shadow">
             <div className="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5 border-b border-zinc-100 pb-2">
-              <span className="font-mono text-[11px] font-bold text-red-800">{q.subcategoryId}</span>
-              <span className="text-[11px] text-zinc-500">{q.categoryEs}</span>
+              <span className="font-mono text-[13px] font-bold text-red-800">{q.subcategoryId}</span>
+              <span className="text-[13px] text-zinc-500">{q.categoryEs}</span>
             </div>
-            <p className="text-sm font-semibold text-zinc-900 mb-2 leading-relaxed">{questionPlainBody(q.text, q.subcategoryId)}</p>
+            <p className="text-[14px] font-semibold text-zinc-900 mb-2 leading-relaxed">{questionPlainBody(q.text, q.subcategoryId)}</p>
             <div className="rounded-md border border-slate-200 bg-slate-50/90 px-3 py-2 mb-3">
-              <p className="mb-1 inline-flex items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-slate-500">
-                <i className="fa-solid fa-language text-[10px]" aria-hidden />
+              <p className="mb-1 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                <i className="fa-solid fa-language text-[12px]" aria-hidden />
                 Outcome oficial NIST (ingles)
               </p>
-              <p className="text-[11px] leading-snug text-slate-700 italic">{q.outcomeEn}</p>
+              <p className="text-[13px] leading-snug text-slate-700 italic">{q.outcomeEn}</p>
             </div>
             <div className="flex gap-2 flex-wrap">
               {([
@@ -1218,7 +1041,7 @@ function QuestionScreen({
                 { val: 0, label: "No implementado", cls: "red", fa: "fa-xmark" as const },
               ] as const).map((opt) => {
                 const selected = answers[qIdx] === opt.val;
-                const base = "inline-flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-md border-2 transition-all";
+                const base = "inline-flex items-center gap-1.5 text-[12px] font-semibold px-3.5 py-1.5 rounded-md border-2 transition-all";
                 const styles = {
                   emerald: selected ? "border-emerald-500 bg-emerald-50 text-emerald-800" : "border-zinc-200 text-zinc-500 hover:border-emerald-300 hover:text-emerald-700",
                   amber: selected ? "border-amber-500 bg-amber-50 text-amber-800" : "border-zinc-200 text-zinc-500 hover:border-amber-300 hover:text-amber-700",
@@ -1226,7 +1049,7 @@ function QuestionScreen({
                 };
                 return (
                   <button type="button" key={opt.val} onClick={() => onAnswer(qIdx, opt.val)} className={`${base} ${styles[opt.cls]}`}>
-                    <i className={`fa-solid ${opt.fa} text-[11px]`} aria-hidden />
+                    <i className={`fa-solid ${opt.fa} text-[13px]`} aria-hidden />
                     {opt.label}
                   </button>
                 );
@@ -1330,11 +1153,11 @@ function Results({
 
       {governanceRecordHasAnyContent(governanceRecord) && (
         <div className="mb-6 rounded-xl border border-amber-200/80 bg-amber-50/40 px-4 py-3 shadow-sm ring-1 ring-amber-100/60">
-          <p className="mb-2 inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-900">
+          <p className="mb-2 inline-flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-wider text-amber-900">
             <i className="fa-solid fa-landmark text-amber-800" aria-hidden />
             Registro de gobierno
           </p>
-          <dl className="grid gap-1 text-[11px] text-zinc-800 sm:grid-cols-2">
+          <dl className="grid gap-1 text-[13px] text-zinc-800 sm:grid-cols-2">
             {governanceRecord.institutionName.trim() && (
               <>
                 <dt className="font-semibold text-zinc-600">Institucion</dt>
@@ -1378,7 +1201,7 @@ function Results({
               </>
             )}
           </dl>
-          <p className="mt-2 text-[10px] text-zinc-500">
+          <p className="mt-2 text-[12px] text-zinc-500">
             Edite en el inicio, seccion <strong className="text-zinc-600">Registro de gobierno</strong>. Se incluye en informe HTML, impresion y PDF.
           </p>
         </div>
@@ -1402,28 +1225,26 @@ function Results({
             Nivel: <span className={`inline-block rounded-full border px-3 py-1 text-xs font-bold ${levelColors[overallLevel.cls]}`}>{overallLevel.label}</span>
           </h3>
           <p className="mb-3 text-sm leading-relaxed text-zinc-600">{overallLevel.desc}</p>
-          <p className="text-[11px] leading-relaxed text-zinc-600 border-t-2 border-red-100 pt-2">
+          <p className="text-[13px] leading-relaxed text-zinc-600 border-t-2 border-red-100 pt-2">
             El Core NIST CSF 2.0 incluye <strong className="text-zinc-800">contexto organizacional</strong> (mision, leyes, partes interesadas) en categorias como{" "}
             <span className="font-mono text-red-800">GV.OC</span>; este cuestionario es el mismo para cualquier tipo de organizacion. La madurez mostrada arriba es el <strong className="text-zinc-800">promedio global</strong> y, al desplegar cada control, el porcentaje por bloque C0-C9.
           </p>
         </div>
       </div>
 
-      <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-center">
-        <p className="text-[11px] text-slate-700 leading-relaxed">
-          Las listas de <strong>Outcomes</strong> y el texto oficial del Core estan en{" "}
-          <a href={NIST_CSF_PORTAL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-red-700 underline hover:text-red-800">
-            NIST Cybersecurity Framework
-            <i className="fa-solid fa-arrow-up-right-from-square text-[10px]" aria-hidden />
-          </a>
-          {" "}(documento CSF 2.0 y publicacion NIST.CSWP.29). Esta herramienta es educativa y no sustituye al PDF de NIST.
+      <div className="mb-6 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+        <p className="text-[13px] text-slate-700 leading-relaxed">
+        Esta herramienta es una herramienta de evaluación de madurez en ciberseguridad basada en el NIST Cybersecurity Framework (CSF) 2.0.
+Su propósito es estimar el nivel de madurez organizacional frente a los resultados esperados (Outcomes) del Core del NIST CSF 2.0, identificando brechas, prioridades y oportunidades de mejora.
+No sustituye la documentación oficial del NIST ni una auditoría formal, ni constituye asesoramiento legal o regulatorio. El NIST CSF se utiliza como marco de referencia internacionalmente reconocido y validado por expertos, tras el análisis comparativo de diversos marcos y normas (ISO, buenas prácticas y modelos de riesgo).
+La herramienta está diseñada para auto‑diagnóstico, gestión del riesgo y mejora continua, y puede apoyar procesos de gobernanza, ERM (Gestion de riesgos empresariales) y toma de decisiones estratégicas. 
         </p>
       </div>
 
       {/* Chips */}
       <div className="flex flex-wrap gap-2 mb-6">
         {scores.map((s) => (
-          <span key={s.control.id} className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border ${levelColors[s.level.cls]}`}>
+          <span key={s.control.id} className={`inline-flex items-center gap-1.5 text-[12px] font-bold px-3 py-1.5 rounded-lg border ${levelColors[s.level.cls]}`}>
             <i className={s.control.icon} aria-hidden />
             {s.control.baseControlCode}: {s.score}%
           </span>
@@ -1450,17 +1271,17 @@ function Results({
             </button>
             {isOpen && (
               <div className="border-t border-zinc-100 px-4 pb-4 pt-3">
-                <p className="mb-2 text-[10px] font-extrabold uppercase tracking-wider text-amber-900">Control base (catalogo de 10)</p>
-                <p className="mb-3 text-[10px] text-zinc-700">
+                <p className="mb-2 text-[12px] font-extrabold uppercase tracking-wider text-amber-900">Control base (catalogo de 10)</p>
+                <p className="mb-3 text-[12px] text-zinc-700">
                   <span className="font-mono font-bold text-red-700">{s.control.baseControlCode}</span>
                   {BASE_CONTROL_NAMES[s.control.baseControlCode] ? ` — ${BASE_CONTROL_NAMES[s.control.baseControlCode]}` : ""}
                 </p>
-                <p className="mb-3 text-[10px] leading-relaxed text-zinc-600">{s.control.baseControlNote}</p>
+                <p className="mb-3 text-[12px] leading-relaxed text-zinc-600">{s.control.baseControlNote}</p>
 
-                <p className="mb-2 text-[11px] font-extrabold uppercase tracking-wider text-red-700">
+                <p className="mb-2 text-[13px] font-extrabold uppercase tracking-wider text-red-700">
                   Subcategorias: respuesta y recomendaciones
                 </p>
-                <p className="mb-2 text-[10px] leading-snug text-zinc-500">
+                <p className="mb-2 text-[12px] leading-snug text-zinc-500">
                   Recomendaciones del catalogo NIST solo si la respuesta es <strong className="text-zinc-700">No</strong> o <strong className="text-zinc-700">Parcial</strong>. Con <strong className="text-zinc-700">Si</strong> no se muestran. Sin respuesta, tampoco.
                 </p>
                 <div className="results-detail-scroll mb-4 max-h-[min(28rem,70vh)] space-y-2 overflow-y-auto pr-0.5 print:max-h-none print:overflow-visible">
@@ -1474,16 +1295,16 @@ function Results({
                       <div
                         key={q.subcategoryId}
                         id={`result-sub-${s.control.id}-${q.subcategoryId}`}
-                        className="print-question-block rounded-lg border border-zinc-200 bg-zinc-50/90 px-2.5 py-2 text-[10px] scroll-mt-24"
+                        className="print-question-block rounded-lg border border-zinc-200 bg-zinc-50/90 px-2.5 py-2 text-[13px] scroll-mt-24"
                       >
                         <div className="flex justify-between gap-2">
                           <span className="min-w-0 text-red-800">
                             <span className="font-mono font-bold">{q.subcategoryId}</span>
-                            <span className="text-zinc-500 block text-[9px]">{q.categoryEs}</span>
+                            <span className="text-zinc-500 block text-[11px]">{q.categoryEs}</span>
                           </span>
                           <span className="shrink-0 text-zinc-700 font-semibold">Respuesta: {st}</span>
                         </div>
-                        <p className="mt-1.5 text-[10px] leading-snug text-zinc-800">
+                        <p className="mt-1.5 text-[13px] leading-snug text-zinc-800">
                           <span className="font-semibold text-zinc-600">Pregunta: </span>
                           {questionPlainBody(q.text, q.subcategoryId)}
                         </p>
@@ -1499,17 +1320,17 @@ function Results({
                                     lines: ex!,
                                   })
                                 }
-                                className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white px-2 py-1 text-[10px] font-semibold text-red-700 shadow-sm transition-colors hover:border-red-300 hover:bg-red-50"
+                                className="inline-flex items-center gap-1.5 rounded-md border border-red-200 bg-white px-2 py-1 text-[13px] font-semibold text-red-700 shadow-sm transition-colors hover:border-red-300 hover:bg-red-50"
                               >
-                                <i className="fa-solid fa-up-right-from-square text-[9px]" aria-hidden />
+                                <i className="fa-solid fa-up-right-from-square text-[11px]" aria-hidden />
                                 Ver recomendacion ({n} {n === 1 ? "linea" : "lineas"})
                               </button>
                             </div>
                             <div className="mt-2 hidden border-t border-emerald-200 bg-emerald-50/80 px-2 py-2 print:block">
-                              <p className="text-[9px] font-bold uppercase tracking-wide text-emerald-900">
+                              <p className="text-[11px] font-bold uppercase tracking-wide text-emerald-900">
                                 Recomendacion del catalogo
                               </p>
-                              <ol className="mt-1 list-decimal space-y-1 pl-4 text-[9px] leading-snug text-zinc-800">
+                              <ol className="mt-1 list-decimal space-y-1 pl-4 text-[11px] leading-snug text-zinc-800">
                                 {ex!.map((line, li) => (
                                   <li key={li}>{line}</li>
                                 ))}
@@ -1549,11 +1370,11 @@ function Results({
                 <h3 id="orient-dialog-title" className="font-mono text-sm font-bold text-red-800">
                   {orientModal.subcategoryId}
                 </h3>
-                <p className="mt-0.5 text-[10px] text-zinc-500">{orientModal.categoryEs}</p>
-                <p className="mt-1 text-[10px] font-semibold text-amber-900">
+                <p className="mt-0.5 text-[12px] text-zinc-500">{orientModal.categoryEs}</p>
+                <p className="mt-1 text-[12px] font-semibold text-amber-900">
                   Recomendacion(es)
                 </p>
-                <p className="mt-1 text-[10px] leading-snug text-zinc-600">
+                <p className="mt-1 text-[12px] leading-snug text-zinc-600">
                   Referencia: material alineado con{" "}
                   <strong className="text-zinc-800">Download CSF 2.0 Informative Reference in the Core</strong>{" "}
                   (NIST CSF 2.0 Informative References).{" "}
@@ -1573,15 +1394,15 @@ function Results({
                 ref={orientCloseRef}
                 type="button"
                 onClick={() => setOrientModal(null)}
-                className="shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 text-[10px] font-bold text-zinc-700 transition-colors hover:bg-zinc-100"
+                className="shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 px-2.5 py-1.5 text-[12px] font-bold text-zinc-700 transition-colors hover:bg-zinc-100"
               >
                 Cerrar
               </button>
             </div>
-            <ul className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3 text-[11px] leading-relaxed text-zinc-800 sm:px-5">
+            <ul className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3 text-[13px] leading-relaxed text-zinc-800 sm:px-5">
               {orientModal.lines.map((line, i) => (
                 <li key={i} className="flex gap-2.5 border-b border-zinc-100 pb-3 last:border-0 last:pb-0">
-                  <span className="shrink-0 font-mono text-[10px] font-bold text-emerald-800">{i + 1}.</span>
+                  <span className="shrink-0 font-mono text-[12px] font-bold text-emerald-800">{i + 1}.</span>
                   <span>{line}</span>
                 </li>
               ))}
@@ -1609,18 +1430,18 @@ function Results({
       {/* Disclaimer */}
       <div className="mt-8 rounded-xl border border-red-100 bg-gradient-to-br from-white to-red-50/70 p-5 text-center shadow-sm ring-1 ring-red-100/50">
         <p className="mb-2 text-xs font-extrabold uppercase tracking-wider text-red-700">Plataforma academica y educativa</p>
-        <p className="text-xs leading-relaxed text-zinc-700">
+        <p className="text-[12px] leading-relaxed text-zinc-700">
           <strong className="text-red-700">No afiliada ni respaldada por NIST.</strong> No reemplaza auditoria formal.
           Herramienta <strong className="text-red-700">uptlibre</strong>. Marco unico NIST CSF 2.0. Ningun dato salio de su navegador.
         </p>
-        <p className="mt-2 text-sm font-bold text-red-700">
+        <p className="mt-2 text-[14px] font-bold text-red-700">
           <a href={PUBLIC_SITE} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-red-600">
             <i className="fa-solid fa-globe text-base" aria-hidden />
             nistcsf.uptlibre.pe
           </a>
         </p>
-        <p className="text-xs font-medium text-zinc-600">Libertad y Pensamiento</p>
-        <p className="mt-2 text-[11px] text-zinc-600">
+        <p className="text-[12px] font-medium text-zinc-600">Libertad y Pensamiento</p>
+        <p className="mt-2 text-[13px] text-zinc-600">
           <a
             href={UPTLIBRE_PORTAL_URL}
             target="_blank"
@@ -1730,13 +1551,13 @@ function SeguimientoScreen({
       </div>
 
       <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50/50 p-5 shadow-sm">
-        <p className="mb-2 inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-amber-900">
+        <p className="mb-2 inline-flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-wider text-amber-900">
           <i className="fa-solid fa-floppy-disk text-amber-800" aria-hidden />
           Guardar medicion
         </p>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
           <div className="flex-1">
-            <label htmlFor="snap-label" className="text-[11px] font-semibold text-zinc-700 block mb-1">
+            <label htmlFor="snap-label" className="text-[13px] font-semibold text-zinc-700 block mb-1">
               Etiqueta (opcional)
             </label>
             <input
@@ -1759,7 +1580,7 @@ function SeguimientoScreen({
       </div>
 
       <div className="mb-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <p className="mb-3 inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-zinc-600">
+        <p className="mb-3 inline-flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-wider text-zinc-600">
           <i className="fa-solid fa-clock-rotate-left text-zinc-400" aria-hidden />
           Mediciones guardadas
         </p>
@@ -1772,18 +1593,18 @@ function SeguimientoScreen({
               return (
                 <li
                   key={s.id}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2 text-[11px]"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-zinc-100 bg-zinc-50 px-3 py-2 text-[13px]"
                 >
                   <div>
                     <span className="font-semibold text-zinc-900">{s.label}</span>
-                    <span className="text-zinc-500 block text-[10px]">
+                    <span className="text-zinc-500 block text-[12px]">
                       {new Date(s.createdAt).toLocaleString("es-CL")} · global {m.overall}%
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleDelete(s.id)}
-                    className="inline-flex items-center gap-1 text-red-600 font-semibold hover:underline text-[10px]"
+                    className="inline-flex items-center gap-1 text-red-600 font-semibold hover:underline text-[12px]"
                   >
                     <i className="fa-solid fa-trash-can" aria-hidden />
                     Eliminar
@@ -1796,13 +1617,13 @@ function SeguimientoScreen({
       </div>
 
       <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-        <p className="mb-3 inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-zinc-600">
+        <p className="mb-3 inline-flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-wider text-zinc-600">
           <i className="fa-solid fa-code-compare text-zinc-400" aria-hidden />
           Comparar dos mediciones
         </p>
         <div className="grid sm:grid-cols-2 gap-3 mb-4">
           <div>
-            <label className="text-[11px] font-semibold text-zinc-700 block mb-1">Medicion A (referencia)</label>
+            <label className="text-[13px] font-semibold text-zinc-700 block mb-1">Medicion A (referencia)</label>
             <select
               value={selA}
               onChange={(e) => setSelA(e.target.value)}
@@ -1817,7 +1638,7 @@ function SeguimientoScreen({
             </select>
           </div>
           <div>
-            <label className="text-[11px] font-semibold text-zinc-700 block mb-1">Medicion B (comparar)</label>
+            <label className="text-[13px] font-semibold text-zinc-700 block mb-1">Medicion B (comparar)</label>
             <select
               value={selB}
               onChange={(e) => setSelB(e.target.value)}
@@ -1863,7 +1684,7 @@ function SeguimientoScreen({
             </table>
           </div>
         )}
-        {(!mA || !mB) && <p className="text-[11px] text-zinc-500">Seleccione dos mediciones para ver diferencias.</p>}
+        {(!mA || !mB) && <p className="text-[13px] text-zinc-500">Seleccione dos mediciones para ver diferencias.</p>}
       </div>
     </div>
   );

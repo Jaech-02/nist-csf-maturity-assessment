@@ -5,6 +5,23 @@ Todos los cambios notables del proyecto se documentan en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/),
 y el proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
+## [2.5] - 2026-04-24
+
+### Added
+- `anci-advisor/src/app/_components/`: cabecera (`SiteHeader`), barra de navegacion (`SiteNavigation`) y pie (`SiteFooter`) extraidos de `page.tsx`, con `index.ts` de reexportacion.
+- `anci-advisor/src/lib/csf-catalog.ts`: campo opcional **`outcomeEs`** (Outcome del Core en español por subcategoria) y, donde aplica, referencia de **pagina del PDF** (`page`, p. ej. texto `pag21` en la primera fila de ejemplo en la UI). Tabla **Core NIST CSF completo**: columna **Outcome (ES)**; columna **pdf** con enlace al PDF NIST.CSWP.29; referencia de pagina en texto (no enlace) segun fila.
+- `anci-advisor/src/lib/nist-links.ts`: URLs **`NIST_CSF_CSWP29_PDF_URL`** y **`NIST_CSF_CSWP29_FINAL_URL`** (PDF y ficha CSRC de NIST.CSWP.29).
+- **Resultados** (`page.tsx`): bloque de texto sobre proposito de la herramienta (autoevaluacion de madurez frente a Outcomes del Core, limites frente a NIST/auditoria, marco de referencia) y mencion de **ERM** con expansion a *Enterprise Risk Management* y gestion integral de riesgos empresariales.
+- **Pie de sitio** (`site-footer.tsx`): aviso corto (plataforma de evaluacion de madurez, uso de autoevaluacion, no sustituye evaluaciones formales ni documentacion oficial NIST), integrado en el footer con una sola linea separadora (`border-zinc-100`), **encima** de la linea de copyright (`©` / version).
+
+### Changed
+- **Legibilidad / UX**: ajustes de tamano de texto en bloques puntuales (p. ej. listas de la seccion de dimensiones del instrumento en inicio: cuerpo de items con `text-sm`); revision de copy en flujos de lectura.
+- **LICENSE** (raiz): avisos de copyright / identificacion alineados al producto y al upstream **ANCI / TTPSEC** (segun el contenido vigente del archivo).
+
+### Removed
+- Texto tipo *«herramienta educativa y no sustituye al PDF de NIST»* en el sentido de aviso duplicado: el mensaje de limites queda en el bloque de Resultados y en el **disclaimer** del pie (sin repetir la formula anterior del PDF como unico sustituto del aviso legal).
+
+
 ## [2.4] - 2026-04-12
 
 ### Added

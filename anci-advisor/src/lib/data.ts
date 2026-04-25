@@ -6,7 +6,6 @@
 import {
   CSF_CATALOG_ITEMS,
   CSF_PHASES_META,
-  type CsfCatalogItem,
   type CsfFunctionCode,
 } from "./csf-catalog";
 
